@@ -12,3 +12,6 @@ wdio.conf.js.map
 !.vscode/extensions.json
 !.vscode/launch.json
 !.vscode/tasks.json
+
+# Git worktrees directory
+.worktrees/
