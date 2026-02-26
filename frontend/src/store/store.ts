@@ -13,6 +13,17 @@ export default store;
 
 export type StatusMessageType = 'success' | 'error' | 'invisible';
 
+export interface DynamicEnumTokenState {
+  loading: boolean;
+  error?: string;
+  options: EnumTokenOption[];
+  lastLoadedAt?: number;
+}
+
+export interface DynamicEnumsState {
+  [tokenName: string]: DynamicEnumTokenState;
+}
+
 export interface RootState {
   config: ExtensionConfig;
   shareableConfig: ShareableConfig;
@@ -28,4 +39,5 @@ export interface RootState {
   availableRepositories: string[];
   statusMessage: '';
   statusMessageType: StatusMessageType;
+  dynamicEnums: DynamicEnumsState;
 }

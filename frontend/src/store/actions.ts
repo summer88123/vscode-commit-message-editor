@@ -23,6 +23,11 @@ export const SHAREABLE_CONFIG_STATIC_TEMPLATE_CHANGE =
 export const SHAREABLE_CONFIG_DYNAMIC_TEMPLATE_CHANGE =
   'SHAREABLE_CONFIG_DYNAMIC_TEMPLATE_CHANGE';
 export const CHANGE_STATUS_MESSAGE = 'CHANGE_STATUS_MESSAGE';
+export const LOAD_DYNAMIC_OPTIONS_START = 'LOAD_DYNAMIC_OPTIONS_START';
+export const LOAD_DYNAMIC_OPTIONS_SUCCESS = 'LOAD_DYNAMIC_OPTIONS_SUCCESS';
+export const LOAD_DYNAMIC_OPTIONS_FAILURE = 'LOAD_DYNAMIC_OPTIONS_FAILURE';
+export const CLEAR_DYNAMIC_OPTIONS = 'CLEAR_DYNAMIC_OPTIONS';
+export const CLEAR_ALL_DYNAMIC_OPTIONS = 'CLEAR_ALL_DYNAMIC_OPTIONS';
 
 export const receiveConfig = createAction<ExtensionConfig>(RECEIVE_CONFIG);
 export const recentCommitsRequest = createAction<string | undefined>(
@@ -80,3 +85,24 @@ export const changeStatusMessage = createAction<{
   statusMessage: string;
   statusMessageType: 'error' | 'success' | 'invisible';
 }>(CHANGE_STATUS_MESSAGE);
+
+export const loadDynamicOptionsStart = createAction<{tokenName: string}>(
+  LOAD_DYNAMIC_OPTIONS_START
+);
+
+export const loadDynamicOptionsSuccess = createAction<{
+  tokenName: string;
+  options: EnumTokenOption[];
+}>(LOAD_DYNAMIC_OPTIONS_SUCCESS);
+
+export const loadDynamicOptionsFailure = createAction<{
+  tokenName: string;
+  error: string;
+}>(LOAD_DYNAMIC_OPTIONS_FAILURE);
+
+export const clearDynamicOptions = createAction<{tokenName: string}>(
+  CLEAR_DYNAMIC_OPTIONS
+);
+
+export const clearAllDynamicOptions = createAction(CLEAR_ALL_DYNAMIC_OPTIONS);
+

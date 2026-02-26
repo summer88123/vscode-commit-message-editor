@@ -16,6 +16,11 @@ import {
   UPDATE_TOKEN_VALUES,
   CHANGE_STATUS_MESSAGE,
   CHANGE_SELECTED_REPOSITORY,
+  LOAD_DYNAMIC_OPTIONS_START,
+  LOAD_DYNAMIC_OPTIONS_SUCCESS,
+  LOAD_DYNAMIC_OPTIONS_FAILURE,
+  CLEAR_DYNAMIC_OPTIONS,
+  CLEAR_ALL_DYNAMIC_OPTIONS,
 } from './actions';
 
 export const createInitialState = (): RootState => ({
@@ -55,6 +60,7 @@ export const createInitialState = (): RootState => ({
   numberOfRepositories: 0,
   selectedRepositoryPath: '',
   availableRepositories: [],
+  dynamicEnums: {},
 });
 
 const initialState = createInitialState();
@@ -137,5 +143,35 @@ export const rootReducer = createReducer(initialState, {
     const {statusMessage, statusMessageType} = action.payload;
     state.statusMessage = statusMessage;
     state.statusMessageType = statusMessageType;
+  },
+  [LOAD_DYNAMIC_OPTIONS_START]: (state: RootState, action) => {
+    const {tokenName} = action.payload;
+    state.dynamicEnums[tokenName] = {
+      loading: true,
+      options: [],
+    };
+  },
+  [LOAD_DYNAMIC_OPTIONS_SUCCESS]: (state: RootState, action) => {
+    const {tokenName, options} = action.payload;
+    state.dynamicEnums[tokenName] = {
+      loading: false,
+      options,
+      lastLoadedAt: Date.now(),
+    };
+  },
+  [LOAD_DYNAMIC_OPTIONS_FAILURE]: (state: RootState, action) => {
+    const {tokenName, error} = action.payload;
+    state.dynamicEnums[tokenName] = {
+      loading: false,
+      error,
+      options: [],
+    };
+  },
+  [CLEAR_DYNAMIC_OPTIONS]: (state: RootState, action) => {
+    const {tokenName} = action.payload;
+    delete state.dynamicEnums[tokenName];
+  },
+  [CLEAR_ALL_DYNAMIC_OPTIONS]: (state: RootState) => {
+    state.dynamicEnums = {};
   },
 });
