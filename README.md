@@ -65,7 +65,7 @@ An array of token objects. It defines the form fields. The table below shows the
 | label                      | string  | The label of the form item.                                                                                                                                            | all       |
 | name                       | string  | The token name in the template.                                                                                                                                        | all       |
 | value                      | string  | The value of the boolean token when it is true                                                                                                                         | boolean   |
-| type                       | enum    | The type of the token. Valid values are:<br> **text**: displayed as a text input<br>**boolean**: displayed as a checkbox<br>**enum**: displayed as a dropdown selector | all       |
+| type                       | enum    | The type of the token. Valid values are:<br> **text**: displayed as a text input<br>**boolean**: displayed as a checkbox<br>**enum**: displayed as a dropdown selector<br>**dynamic-enum**: displayed as a dropdown with options loaded from a provider | all       |
 | description                | string  | A longer text under the form item                                                                                                                                      | all       |
 | prefix                     | string  | Text before the value. It will only be applied if the value is not empty                                                                                               | all       |
 | suffix                     | string  | Text after the value. It will only be applied if the value is not empty                                                                                                | all       |
@@ -77,15 +77,72 @@ An array of token objects. It defines the form fields. The table below shows the
 | maxLineLength              | number  | The position of the vertical ruler when the monospace editor is used                                                                                                   | text      |
 | multiple                   | boolean | Multiple options                                                                                                                                                       | enum      |
 | separator                  | string  | Separator character when multiple options were selected                                                                                                                | enum      |
-| combobox                   | boolean | Is the selector filterable or not                                                                                                                                      | enum      |
+| combobox                   | boolean | Is the selector filterable or not                                                                                                                                      | enum, dynamic-enum      |
 | options                    | array   | Available options                                                                                                                                                      | enum      |
 | options[_{n}_].label       | string  | The value of the option                                                                                                                                                | enum      |
 | options[_{n}_].description | string  | A longer description for the option                                                                                                                                    | enum      |
+| provider                   | string  | The ID of the dynamic options provider (required for dynamic-enum)                                                                                                     | dynamic-enum |
 
 ### Sample configs
 
 - [Default](example-configs/default.json)
 - [Gitmojis](example-configs/gitmojis.json)
 - [Gitmojis - With Simplifed Chinese descriptions](example-configs/gitmojis_zh-CN.json)
+- [Dynamic Enum - Jira Integration](example-configs/dynamic-enum-jira-example.json)
+- [Dynamic Enum - Git Branch Info](example-configs/dynamic-enum-git-example.json)
 
 You can customize the Gitmoji config with the `scripts/gitmoji-config.js` script
+
+## Dynamic Enum Provider API
+
+Starting from version 0.19.0, this extension provides an API that allows other VSCode extensions to register **Dynamic Options Providers**. These providers can fetch enum options from external sources (APIs, Git information, file systems, etc.) dynamically, rather than using static configuration.
+
+### Use Cases
+
+- Fetch Jira/GitHub issues from your project management system
+- Extract issue numbers from Git branch names
+- List project components from your codebase
+- Load user lists from your organization's directory
+- Any other dynamic data source
+
+### Quick Example
+
+```typescript
+import * as vscode from 'vscode';
+
+export function activate(context: vscode.ExtensionContext) {
+  const cmeExtension = vscode.extensions.getExtension(
+    'adam-bender.commit-message-editor'
+  );
+  
+  if (cmeExtension) {
+    const cmeAPI = cmeExtension.exports;
+    
+    const disposable = cmeAPI.registerDynamicOptionsProvider({
+      id: 'my-provider',
+      displayName: 'My Provider',
+      async provideOptions(context, token) {
+        // Fetch options from your data source
+        return [
+          { value: 'option1', label: 'Option 1', description: 'First option' },
+          { value: 'option2', label: 'Option 2', description: 'Second option' }
+        ];
+      }
+    });
+    
+    context.subscriptions.push(disposable);
+  }
+}
+```
+
+### Documentation
+
+For complete documentation, examples, and best practices, see:
+- [Dynamic Enum Provider API Guide](docs/dynamic-enum-provider.md)
+
+### Example Providers
+
+The documentation includes full implementation examples for:
+- **Jira Provider**: Fetch issues from your current sprint
+- **Git Branch Provider**: Extract issue numbers from branch names
+- **File System Provider**: List components from your project structure
