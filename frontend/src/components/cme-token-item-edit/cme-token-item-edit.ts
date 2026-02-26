@@ -15,7 +15,7 @@ const isUndefined = (val: unknown): boolean => {
   return val === null || val === void 0;
 };
 
-type TokenType = 'text' | 'enum' | 'boolean';
+type TokenType = 'text' | 'enum' | 'boolean' | 'dynamic-enum';
 
 @customElement('cme-token-item-edit')
 export class TokenItemEdit extends LitElement {

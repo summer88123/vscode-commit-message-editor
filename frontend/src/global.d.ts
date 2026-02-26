@@ -49,7 +49,7 @@ declare global {
     setState: (state: RootState) => void;
   }
 
-  type TokenType = 'text' | 'boolean' | 'enum';
+  type TokenType = 'text' | 'boolean' | 'enum' | 'dynamic-enum';
 
   interface EnumTokenOption {
     label: string;
@@ -63,6 +63,7 @@ declare global {
     type: TokenType;
     value?: string;
     options?: EnumTokenOption[];
+    provider?: string;  // 用于 dynamic-enum 类型
     description?: string;
     multiline?: boolean;
     monospace?: boolean;
