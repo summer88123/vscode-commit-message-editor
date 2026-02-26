@@ -5,6 +5,8 @@ import SettingsPageController from './commands/SettingsPageController';
 import CopyFromScmInputBoxCommand from './commands/CopyFromScmInputBoxCommand';
 import { Command } from './definitions';
 import Logger from './utils/Logger';
+import { DynamicOptionsProviderRegistry } from './providers/DynamicOptionsProviderRegistry';
+import type { DynamicOptionsProvider } from './providers/DynamicOptionsProvider';
 
 export async function activate(context: vscode.ExtensionContext) {
   const logger = new Logger();
@@ -43,6 +45,27 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   logger.log('Extension has been activated');
+
+  // 返回公共 API
+  return {
+    registerDynamicOptionsProvider(
+      id: string,
+      provider: DynamicOptionsProvider
+    ): vscode.Disposable {
+      DynamicOptionsProviderRegistry.register(id, provider);
+      return new vscode.Disposable(() => {
+        DynamicOptionsProviderRegistry.unregister(id);
+      });
+    },
+  };
 }
 
 export function deactivate() {}
+
+// 导出类型定义
+export type {
+  DynamicOptionsProvider,
+  DynamicOptionsContext,
+  DynamicOptionItem,
+} from './providers';
+
