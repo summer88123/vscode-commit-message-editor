@@ -39,6 +39,8 @@ class FormBuilder {
       switch (token.type) {
         case 'enum':
           return this._renderEnumTypeWidget(token);
+        case 'dynamic-enum':
+          return this._renderDynamicEnumTypeWidget(token);
         case 'text':
           return this._renderTextTypeWidget(token);
         case 'boolean':
@@ -114,6 +116,29 @@ class FormBuilder {
         `;
 
     return this._renderFormItem(select, label, description);
+  }
+
+  private _renderDynamicEnumTypeWidget(token: Token) {
+    // 对于 dynamic-enum，如果有静态 options 则显示它们
+    // 否则显示占位符,实际的动态加载将在父组件中处理
+    if (token.options && token.options.length > 0) {
+      return this._renderEnumTypeWidget(token);
+    }
+
+    const {description, label, name} = token;
+    
+    // 显示一个输入框作为 fallback
+    const inputbox = html`
+      <vscode-inputbox
+        data-name="${name}"
+        name="${name}"
+        @vsc-change="${this._handleFormItemChange}"
+        placeholder="手动输入或等待选项加载..."
+        style="width: 100%;"
+      ></vscode-inputbox>
+    `;
+
+    return this._renderFormItem(inputbox, label, description);
   }
 
   private _renderTextTypeWidget(token: Token) {
