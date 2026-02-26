@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { DynamicOptionsProviderRegistry } from '../providers/DynamicOptionsProviderRegistry';
 import { DynamicOptionsContext } from '../providers/DynamicOptionsProvider';
+import { DynamicOptionsProviderRegistry } from '../providers/DynamicOptionsProviderRegistry';
 
 export interface LoadDynamicOptionsRequest {
   tokenName: string;
@@ -31,18 +31,26 @@ export class DynamicOptionsLoader {
     }
 
     try {
+      // 创建超时 Promise
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          reject(new Error(`加载选项超时（${timeout}ms）`));
+        }, timeout);
+      });
+
+      // 创建 cancellation token 供 provider 使用（可选）
       const cancellationTokenSource = new vscode.CancellationTokenSource();
 
-      const timeoutHandle = setTimeout(() => {
-        cancellationTokenSource.cancel();
-      }, timeout);
-
-      const options = await provider.provideOptions({
+      // 创建加载 Promise
+      const loadPromise = provider.provideOptions({
         ...context,
         cancellationToken: cancellationTokenSource.token,
       });
 
-      clearTimeout(timeoutHandle);
+      // 使用 Promise.race 实现硬超时控制
+      const options = await Promise.race([loadPromise, timeoutPromise]);
+
+      // 清理资源
       cancellationTokenSource.dispose();
 
       return {

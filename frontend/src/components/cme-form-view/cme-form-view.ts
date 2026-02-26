@@ -5,13 +5,14 @@ import '@bendera/vscode-webview-elements/dist/vscode-button';
 import '@bendera/vscode-webview-elements/dist/vscode-form-container';
 import {VscodeFormContainer} from '@bendera/vscode-webview-elements/dist/vscode-form-container';
 import {VscodeInputbox} from '@bendera/vscode-webview-elements/dist/vscode-inputbox';
-import store, {RootState} from '../../store/store';
+import store, {RootState, DynamicEnumsState} from '../../store/store';
 import {
   confirmAmend,
   closeTab,
   copyToSCMInputBox,
   updateTokenValues,
   recentCommitsRequest,
+  loadDynamicOptionsStart,
 } from '../../store/actions';
 import {triggerInputboxRerender} from '../helpers';
 import '../cme-repo-selector';
@@ -19,6 +20,9 @@ import FormBuilder from './FormBuilder';
 import TemplateCompiler from './TemplateCompiler';
 import {CodeEditor} from '../cme-code-editor/cme-code-editor';
 import {RepoSelector} from '../cme-repo-selector';
+import {getAPI} from '../../utils/VSCodeAPIService';
+
+const vscode = getAPI();
 
 @customElement('cme-form-view')
 export class FormView extends connect(store)(LitElement) {
@@ -58,11 +62,15 @@ export class FormView extends connect(store)(LitElement) {
   @state()
   private _dynamicTemplate: string[] = [];
 
+  @state()
+  private _dynamicEnums: DynamicEnumsState = {};
+
   @query('#form-view-repo-selector')
   private _repoSelector!: RepoSelector;
 
-
   private _reduceEmptyLines = true;
+
+  private _dynamicOptionsLoaded = new Set<string>();
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -75,7 +83,7 @@ export class FormView extends connect(store)(LitElement) {
   }
 
   stateChanged(state: RootState): void {
-    const {config, tokenValues} = state;
+    const {config, tokenValues, dynamicEnums} = state;
     const {view, tokens, dynamicTemplate, reduceEmptyLines} = config;
 
     this._saveAndClose = view.saveAndClose;
@@ -83,6 +91,10 @@ export class FormView extends connect(store)(LitElement) {
     this._tokenValues = tokenValues;
     this._dynamicTemplate = dynamicTemplate;
     this._reduceEmptyLines = reduceEmptyLines;
+    this._dynamicEnums = dynamicEnums;
+
+    // 触发 dynamic-enum tokens 的加载
+    this._loadDynamicOptionsIfNeeded();
   }
 
   private _updateTokenValues() {
@@ -103,6 +115,7 @@ export class FormView extends connect(store)(LitElement) {
 
       switch (type) {
         case 'enum':
+        case 'dynamic-enum':
           payload[name] = Array.isArray(rawValue)
             ? rawValue.join(separator)
             : rawValue;
@@ -173,6 +186,41 @@ export class FormView extends connect(store)(LitElement) {
     this._amendCbChecked = checked;
   }
 
+  private _loadDynamicOptionsIfNeeded() {
+    this._tokens.forEach((token) => {
+      if (token.type === 'dynamic-enum' && token.provider) {
+        const tokenName = token.name;
+        
+        // 检查是否已经触发过加载
+        if (this._dynamicOptionsLoaded.has(tokenName)) {
+          return;
+        }
+        
+        // 检查是否已经有状态（正在加载或已加载）
+        if (this._dynamicEnums[tokenName]) {
+          return;
+        }
+        
+        // 标记为已触发加载
+        this._dynamicOptionsLoaded.add(tokenName);
+        
+        // 发起加载请求
+        store.dispatch(loadDynamicOptionsStart({tokenName}));
+        
+        vscode.postMessage({
+          command: 'loadDynamicOptions',
+          payload: {
+            tokenName,
+            providerId: token.provider,
+            context: {
+              tokenValues: this._tokenValues,
+            },
+          },
+        });
+      }
+    });
+  }
+
   static get styles(): CSSResult {
     return css`
       .edit-form {
@@ -220,6 +268,7 @@ export class FormView extends connect(store)(LitElement) {
     formBuilder.formItemChangeHandler = this._handleFormItemChange;
     formBuilder.tokens = this._tokens;
     formBuilder.tokenValues = this._tokenValues;
+    formBuilder.dynamicEnums = this._dynamicEnums;
 
     const formElements = formBuilder.build();
 

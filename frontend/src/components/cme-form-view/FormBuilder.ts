@@ -9,6 +9,7 @@ import '@bendera/vscode-webview-elements/dist/vscode-multi-select';
 import '@bendera/vscode-webview-elements/dist/vscode-option';
 import '@bendera/vscode-webview-elements/dist/vscode-single-select';
 import noop from '../../utils/noop';
+import type {DynamicEnumsState} from '../../store/store';
 
 class FormBuilder {
   set tokens(val: Token[]) {
@@ -25,6 +26,14 @@ class FormBuilder {
 
   get tokenValues(): { [name: string]: string | string[] } {
     return this._tokenValues;
+  }
+
+  set dynamicEnums(val: DynamicEnumsState) {
+    this._dynamicEnums = val;
+  }
+
+  get dynamicEnums(): DynamicEnumsState {
+    return this._dynamicEnums;
   }
 
   set formItemChangeHandler(fn: () => void) {
@@ -56,6 +65,8 @@ class FormBuilder {
   private _tokens: Token[] = [];
 
   private _tokenValues: { [name: string]: string | string[] } = {};
+
+  private _dynamicEnums: DynamicEnumsState = {};
 
   private _handleFormItemChange: () => void = noop;
 
@@ -119,21 +130,56 @@ class FormBuilder {
   }
 
   private _renderDynamicEnumTypeWidget(token: Token) {
-    // 对于 dynamic-enum，如果有静态 options 则显示它们
-    // 否则显示占位符,实际的动态加载将在父组件中处理
+    const {description, label, name} = token;
+    const dynamicState = this._dynamicEnums[token.name];
+
+    // 如果正在加载，显示加载状态
+    if (dynamicState?.loading) {
+      const loadingWidget = html`
+        <div style="padding: 8px; color: var(--vscode-descriptionForeground);">
+          正在加载选项...
+        </div>
+      `;
+      return this._renderFormItem(loadingWidget, label, description);
+    }
+
+    // 如果加载失败，显示错误和 fallback 输入框
+    if (dynamicState?.error) {
+      const errorWidget = html`
+        <div>
+          <div style="color: var(--vscode-errorForeground); margin-bottom: 8px;">
+            ${dynamicState.error}
+          </div>
+          <vscode-inputbox
+            data-name="${name}"
+            name="${name}"
+            @vsc-change="${this._handleFormItemChange}"
+            placeholder="手动输入..."
+            style="width: 100%;"
+          ></vscode-inputbox>
+        </div>
+      `;
+      return this._renderFormItem(errorWidget, label, description);
+    }
+
+    // 如果有动态加载的选项，使用它们
+    if (dynamicState?.options && dynamicState.options.length > 0) {
+      const tokenWithOptions = {...token, options: dynamicState.options};
+      return this._renderEnumTypeWidget(tokenWithOptions);
+    }
+
+    // 如果有静态 options，显示它们（向后兼容）
     if (token.options && token.options.length > 0) {
       return this._renderEnumTypeWidget(token);
     }
 
-    const {description, label, name} = token;
-    
-    // 显示一个输入框作为 fallback
+    // Fallback：显示普通输入框
     const inputbox = html`
       <vscode-inputbox
         data-name="${name}"
         name="${name}"
         @vsc-change="${this._handleFormItemChange}"
-        placeholder="手动输入或等待选项加载..."
+        placeholder="等待选项加载或手动输入..."
         style="width: 100%;"
       ></vscode-inputbox>
     `;

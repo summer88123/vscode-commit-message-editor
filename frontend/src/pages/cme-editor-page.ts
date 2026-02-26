@@ -10,6 +10,8 @@ import {
   receiveConfig,
   receiveRepositoryInfo,
   recentCommitsReceived,
+  loadDynamicOptionsSuccess,
+  loadDynamicOptionsFailure,
 } from '../store/actions';
 
 const vscode = getAPI();
@@ -69,6 +71,18 @@ export class EditorPage extends connect(store)(LitElement) {
       case 'copyFromSCMInputBox':
         store.dispatch(copyFromSCMInputBox(payload as string));
         break;
+      case 'dynamicOptionsLoaded':
+        this._handleDynamicOptionsLoaded(payload);
+        break;
+    }
+  }
+
+  private _handleDynamicOptionsLoaded(payload: any) {
+    const {tokenName, options, error} = payload;
+    if (error) {
+      store.dispatch(loadDynamicOptionsFailure({tokenName, error}));
+    } else {
+      store.dispatch(loadDynamicOptionsSuccess({tokenName, options}));
     }
   }
 

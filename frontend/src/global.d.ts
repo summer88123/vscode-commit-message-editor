@@ -21,7 +21,8 @@ declare global {
     | 'exportConfig'
     | 'loadCurrentConfig'
     | 'saveToSettings'
-    | 'openConfigurationPage';
+    | 'openConfigurationPage'
+    | 'loadDynamicOptions';
 
   interface PostMessageDO {
     command: PostMessageCommand;
@@ -36,7 +37,8 @@ declare global {
     | 'repositoryInfo'
     | 'receiveImportedConfig'
     | 'statusMessage'
-    | 'loadCurrentConfig';
+    | 'loadCurrentConfig'
+    | 'dynamicOptionsLoaded';
 
   interface ReceivedMessageDO {
     command: MessageEventCommand;
