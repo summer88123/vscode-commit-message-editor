@@ -3,3 +3,4 @@ export {
   DynamicOptionsContext,
   DynamicOptionItem,
 } from './DynamicOptionsProvider';
+export { DynamicOptionsProviderRegistry } from './DynamicOptionsProviderRegistry';
