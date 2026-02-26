@@ -1,39 +1,31 @@
-# Commit Message Editor
+# Hecom Commit Message Editor
 
-Edit commit messages in a convenient way.
+以便捷的方式编辑 Git 提交信息。
 
-## Highlighs
+## 特性亮点
 
-- Commit messages can be editable in a customizable form. This helps you to use a standardized format.
-- Portable configuration to share settings with teammates.
-- A huge textarea on a dedicated tab.
-- Clean look, thanks to [Vscode Webview Elements](https://github.com/bendera/vscode-webview-elements)
+- 提交信息可以在可自定义的表单中编辑。这有助于你使用标准化的格式。
+- 可移植的配置，可与团队成员共享设置。
+- 在专用标签页中提供大型文本编辑区域。
+- 简洁的界面，基于 [Vscode Webview Elements](https://github.com/bendera/vscode-webview-elements)
 
-![Preview](preview1.gif)
+![预览](preview1.gif)
 
-The factory settings follows the [Conventional Commits](https://www.conventionalcommits.org/) specification.
+默认设置遵循 [Conventional Commits](https://www.conventionalcommits.org/) 规范。
 
-![Preview](preview2.gif)
+![预览](preview2.gif)
 
-### More screenshots
+### 更多截图
 
-- [Configuration editor](https://bendera.github.io/vscode-commit-message-editor/screenshots/configuration-editor.png)
-- [Regular textarea](https://bendera.github.io/vscode-commit-message-editor/screenshots/regular-text-editor.png)
-- [Monospace textarea](https://bendera.github.io/vscode-commit-message-editor/screenshots/monospace-text-editor.png)
+- [配置编辑器](https://bendera.github.io/vscode-commit-message-editor/screenshots/configuration-editor.png)
+- [常规文本编辑器](https://bendera.github.io/vscode-commit-message-editor/screenshots/regular-text-editor.png)
+- [等宽文本编辑器](https://bendera.github.io/vscode-commit-message-editor/screenshots/monospace-text-editor.png)
 
-## Customizing the commit message form
+## 自定义提交信息表单
 
-The easiest way to customizing the commit message form is to use the
-Configuration Editor. To open the configuration editor, choose the
-`Commit Message Editor: Open Settings Page` command from the Command Palette, or
-click on the gear icon in the top right corner of the Commit Message Editor tab.
-Here, you can export the current configuration or import another one. The loaded
-configuration can be saved to the user or the workspace settings.
+自定义提交信息表单最简单的方法是使用配置编辑器。要打开配置编辑器，请从命令面板中选择 `Commit Message Editor: Open Settings Page` 命令，或点击提交信息编辑器标签页右上角的齿轮图标。在这里，你可以导出当前配置或导入其他配置。加载的配置可以保存到用户或工作区设置。
 
-A JSON schema is created for the portable configuration file format. This means,
-you can use the [VSCode toolset](https://code.visualstudio.com/docs/languages/json)
-to edit the configuration file manually. Just create a new JSON file with this
-content and start to edit:
+为可移植配置文件格式创建了 JSON schema。这意味着你可以使用 [VSCode 工具集](https://code.visualstudio.com/docs/languages/json)手动编辑配置文件。只需创建一个包含以下内容的新 JSON 文件并开始编辑：
 
 ```json
 {
@@ -41,71 +33,71 @@ content and start to edit:
 }
 ```
 
-### Structure of the portable configuration file
+### 可移植配置文件的结构
 
 #### configVersion
 
-Currently: `"1"`. It might change in the future.
+当前版本：`"1"`。将来可能会更改。
 
 #### staticTemplate
 
-Template for the text view, an array of strings. Every item in the array is a single line.
+文本视图的模板，字符串数组。数组中的每个项都是单独的一行。
 
 #### dynamicTemplate
 
-Template for the form view, an array of strings. Every item in the array is a single line.
-Form fields (see the next section) can be referenced in the the template with the `{token_name}` format.
+表单视图的模板，字符串数组。数组中的每个项都是单独的一行。
+表单字段（见下一节）可以在模板中使用 `{token_name}` 格式引用。
 
 #### tokens
 
-An array of token objects. It defines the form fields. The table below shows the structure of a token object:
+token 对象数组。它定义了表单字段。下表显示了 token 对象的结构：
 
-| Name                       | Type    | Description                                                                                                                                                            | Valid for |
-| -------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| label                      | string  | The label of the form item.                                                                                                                                            | all       |
-| name                       | string  | The token name in the template.                                                                                                                                        | all       |
-| value                      | string  | The value of the boolean token when it is true                                                                                                                         | boolean   |
-| type                       | enum    | The type of the token. Valid values are:<br> **text**: displayed as a text input<br>**boolean**: displayed as a checkbox<br>**enum**: displayed as a dropdown selector<br>**dynamic-enum**: displayed as a dropdown with options loaded from a provider | all       |
-| description                | string  | A longer text under the form item                                                                                                                                      | all       |
-| prefix                     | string  | Text before the value. It will only be applied if the value is not empty                                                                                               | all       |
-| suffix                     | string  | Text after the value. It will only be applied if the value is not empty                                                                                                | all       |
-| multiline                  | boolean | Multiline text input                                                                                                                                                   | text      |
-| monospace                  | boolean | Use the monospace editor in the multiline mode                                                                                                                         | text      |
-| lines                      | number  | Textarea initial height in lines                                                                                                                                       | text      |
-| maxLines                   | number  | Textarea maximum height in lines                                                                                                                                       | text      |
-| maxLength                  | number  | Maximum length of the value                                                                                                                                            | text      |
-| maxLineLength              | number  | The position of the vertical ruler when the monospace editor is used                                                                                                   | text      |
-| multiple                   | boolean | Multiple options                                                                                                                                                       | enum      |
-| separator                  | string  | Separator character when multiple options were selected                                                                                                                | enum      |
-| combobox                   | boolean | Is the selector filterable or not                                                                                                                                      | enum, dynamic-enum      |
-| options                    | array   | Available options                                                                                                                                                      | enum      |
-| options[_{n}_].label       | string  | The value of the option                                                                                                                                                | enum      |
-| options[_{n}_].description | string  | A longer description for the option                                                                                                                                    | enum      |
-| provider                   | string  | The ID of the dynamic options provider (required for dynamic-enum)                                                                                                     | dynamic-enum |
+| 名称                       | 类型    | 描述                                                                                                                                                            | 适用范围 |
+| -------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| label                      | string  | 表单项的标签。                                                                                                                                                    | 所有       |
+| name                       | string  | 模板中的 token 名称。                                                                                                                                             | 所有       |
+| value                      | string  | 布尔 token 为 true 时的值                                                                                                                                         | boolean   |
+| type                       | enum    | token 的类型。有效值为：<br> **text**: 显示为文本输入<br>**boolean**: 显示为复选框<br>**enum**: 显示为下拉选择器<br>**dynamic-enum**: 显示为从提供者加载选项的下拉选择器 | 所有       |
+| description                | string  | 表单项下方的较长文本                                                                                                                                              | 所有       |
+| prefix                     | string  | 值之前的文本。仅在值不为空时应用                                                                                                                                  | 所有       |
+| suffix                     | string  | 值之后的文本。仅在值不为空时应用                                                                                                                                  | 所有       |
+| multiline                  | boolean | 多行文本输入                                                                                                                                                      | text      |
+| monospace                  | boolean | 在多行模式下使用等宽编辑器                                                                                                                                        | text      |
+| lines                      | number  | 文本区域初始高度（行数）                                                                                                                                          | text      |
+| maxLines                   | number  | 文本区域最大高度（行数）                                                                                                                                          | text      |
+| maxLength                  | number  | 值的最大长度                                                                                                                                                      | text      |
+| maxLineLength              | number  | 使用等宽编辑器时垂直标尺的位置                                                                                                                                    | text      |
+| multiple                   | boolean | 多个选项                                                                                                                                                          | enum      |
+| separator                  | string  | 选择多个选项时的分隔符                                                                                                                                            | enum      |
+| combobox                   | boolean | 选择器是否可过滤                                                                                                                                                  | enum, dynamic-enum      |
+| options                    | array   | 可用选项                                                                                                                                                          | enum      |
+| options[_{n}_].label       | string  | 选项的值                                                                                                                                                          | enum      |
+| options[_{n}_].description | string  | 选项的详细描述                                                                                                                                                    | enum      |
+| provider                   | string  | 动态选项提供者的 ID（dynamic-enum 必需）                                                                                                                          | dynamic-enum |
 
-### Sample configs
+### 示例配置
 
-- [Default](example-configs/default.json)
+- [默认配置](example-configs/default.json)
 - [Gitmojis](example-configs/gitmojis.json)
-- [Gitmojis - With Simplifed Chinese descriptions](example-configs/gitmojis_zh-CN.json)
-- [Dynamic Enum - Jira Integration](example-configs/dynamic-enum-jira-example.json)
-- [Dynamic Enum - Git Branch Info](example-configs/dynamic-enum-git-example.json)
+- [Gitmojis - 简体中文描述](example-configs/gitmojis_zh-CN.json)
+- [动态枚举 - Jira 集成](example-configs/dynamic-enum-jira-example.json)
+- [动态枚举 - Git 分支信息](example-configs/dynamic-enum-git-example.json)
 
-You can customize the Gitmoji config with the `scripts/gitmoji-config.js` script
+你可以使用 `scripts/gitmoji-config.js` 脚本自定义 Gitmoji 配置
 
-## Dynamic Enum Provider API
+## 动态枚举提供者 API
 
-Starting from version 0.19.0, this extension provides an API that allows other VSCode extensions to register **Dynamic Options Providers**. These providers can fetch enum options from external sources (APIs, Git information, file systems, etc.) dynamically, rather than using static configuration.
+从 0.19.0 版本开始，此扩展提供了一个 API，允许其他 VSCode 扩展注册**动态选项提供者**。这些提供者可以从外部源（API、Git 信息、文件系统等）动态获取枚举选项，而不是使用静态配置。
 
-### Use Cases
+### 使用场景
 
-- Fetch Jira/GitHub issues from your project management system
-- Extract issue numbers from Git branch names
-- List project components from your codebase
-- Load user lists from your organization's directory
-- Any other dynamic data source
+- 从项目管理系统获取 Jira/GitHub 问题
+- 从 Git 分支名称中提取问题编号
+- 从代码库中列出项目组件
+- 从组织目录加载用户列表
+- 任何其他动态数据源
 
-### Quick Example
+### 快速示例
 
 ```typescript
 import * as vscode from 'vscode';
@@ -122,7 +114,7 @@ export function activate(context: vscode.ExtensionContext) {
       id: 'my-provider',
       displayName: 'My Provider',
       async provideOptions(context, token) {
-        // Fetch options from your data source
+        // 从数据源获取选项
         return [
           { value: 'option1', label: 'Option 1', description: 'First option' },
           { value: 'option2', label: 'Option 2', description: 'Second option' }
@@ -135,14 +127,14 @@ export function activate(context: vscode.ExtensionContext) {
 }
 ```
 
-### Documentation
+### 文档
 
-For complete documentation, examples, and best practices, see:
-- [Dynamic Enum Provider API Guide](docs/dynamic-enum-provider.md)
+完整的文档、示例和最佳实践，请参阅：
+- [动态枚举提供者 API 指南](docs/dynamic-enum-provider.md)
 
-### Example Providers
+### 示例提供者
 
-The documentation includes full implementation examples for:
-- **Jira Provider**: Fetch issues from your current sprint
-- **Git Branch Provider**: Extract issue numbers from branch names
-- **File System Provider**: List components from your project structure
+文档包含以下完整实现示例：
+- **Jira Provider**: 从当前 sprint 获取问题
+- **Git Branch Provider**: 从分支名称中提取问题编号
+- **File System Provider**: 从项目结构中列出组件
