@@ -5,7 +5,7 @@
   "version": "0.25.0",
   "license": "MIT",
   "preview": false,
-  "publisher": "adam-bender",
+  "publisher": "hecom",
   "engines": {
     "vscode": "^1.70.0"
   },
@@ -21,7 +21,7 @@
   ],
   "icon": "icon.png",
   "repository": {
-    "url": "https://github.com/bendera/vscode-commit-message-editor"
+    "url": "https://github.com/summer88123/vscode-commit-message-editor"
   },
   "activationEvents": [
     "onCommand:commitMessageEditor.openEditor",

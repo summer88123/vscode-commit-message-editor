@@ -315,7 +315,7 @@ export class JiraIssuesProvider implements DynamicOptionsProvider {
 
 // 注册
 export function activate(context: vscode.ExtensionContext) {
-  const cmeApi = vscode.extensions.getExtension('bendera.commit-message-editor')?.exports;
+  const cmeApi = vscode.extensions.getExtension('hecom.hecom-commit-message-editor')?.exports;
   
   if (cmeApi) {
     cmeApi.registerDynamicOptionsProvider(
