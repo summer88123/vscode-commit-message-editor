@@ -5,6 +5,7 @@ import GitService, { RepositoryInfo } from '../utils/GitService';
 import EditorView from '../webviews/EditorView';
 import UiApi from '../utils/UiApi';
 import Logger from '../utils/Logger';
+import { DynamicOptionsLoader } from '../webviews/DynamicOptionsLoader';
 
 export default class EditorController {
   private _primaryEditorPanel: vscode.WebviewPanel | undefined;
@@ -139,6 +140,9 @@ export default class EditorController {
       case 'openConfigurationPage':
         vscode.commands.executeCommand('commitMessageEditor.openSettingsPage');
         break;
+      case 'loadDynamicOptions':
+        this._loadDynamicOptions(payload);
+        break;
       default:
         break;
     }
@@ -153,6 +157,34 @@ export default class EditorController {
       .catch((er) => {
         vscode.window.showErrorMessage('Something went wrong', er);
       });
+  }
+
+  private async _loadDynamicOptions(payload: any) {
+    const { tokenName, providerId, context } = payload;
+    
+    try {
+      const result = await DynamicOptionsLoader.load({
+        tokenName,
+        providerId,
+        context: {
+          ...context,
+          repositoryPath: this._git.getSelectedRepositoryPath(),
+        },
+      });
+
+      this._primaryEditorPanel?.webview.postMessage({
+        command: 'dynamicOptionsLoaded',
+        payload: result,
+      });
+    } catch (error: any) {
+      this._primaryEditorPanel?.webview.postMessage({
+        command: 'dynamicOptionsLoaded',
+        payload: {
+          tokenName,
+          error: error.message || '加载选项失败',
+        },
+      });
+    }
   }
 
   private async _confirmAmend(payload: string) {
