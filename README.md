@@ -74,6 +74,106 @@ token 对象数组。它定义了表单字段。下表显示了 token 对象的�
 | options[_{n}_].label       | string  | 选项的值                                                                                                                                                          | enum      |
 | options[_{n}_].description | string  | 选项的详细描述                                                                                                                                                    | enum      |
 | provider                   | string  | 动态选项提供者的 ID（dynamic-enum 必需）                                                                                                                          | dynamic-enum |
+| isConditionalToken         | boolean | 标记此 token 为条件 token，其可见性由关联 token 的值决定                                                                                                         | 所有       |
+| linkedToken                | string  | 关联 token 的名称（isConditionalToken 为 true 时必需）                                                                                                           | 所有       |
+| matchValue                 | string  | 条件表达式或字面值，用于确定此 token 何时可见。支持 When Clause 风格的表达式                                                                                     | 所有       |
+
+### 条件 Token
+
+条件 token 允许你根据其他 token 的值动态显示或隐藏表单字段。这对于创建基于上下文的动态表单非常有用。
+
+#### 基本用法
+
+要创建条件 token，需要设置以下属性：
+
+- `isConditionalToken: true` - 标记此 token 为条件 token
+- `linkedToken: "token_name"` - 指定关联的 token 名称（字符串）
+- `matchValue: "expression"` - 定义条件表达式
+
+#### matchValue 表达式语法
+
+`matchValue` 支持以下格式：
+
+**1. 字面值匹配**（向后兼容）
+```json
+{
+  "matchValue": "bug"
+}
+```
+当关联 token 的值精确等于 `"bug"` 时，此条件 token 可见。
+
+**2. 比较表达式**
+```json
+{
+  "matchValue": "value == 'feat'"
+}
+```
+支持的比较操作符：`==`、`!=`、`<`、`>`、`<=`、`>=`
+
+**3. 逻辑表达式**
+```json
+{
+  "matchValue": "value == 'fix' || value == 'hotfix'"
+}
+```
+支持的逻辑操作符：`&&`（与）、`||`（或）、`!`（非）
+
+**4. `in` 操作符**
+```json
+{
+  "matchValue": "value in ['fix', 'hotfix', 'bug']"
+}
+```
+检查关联 token 的值是否在给定数组中。
+
+**5. 正则表达式匹配**
+```json
+{
+  "matchValue": "value =~ /^(fix|feat)/"
+}
+```
+使用正则表达式匹配关联 token 的值。
+
+#### 示例配置
+
+```json
+{
+  "tokens": [
+    {
+      "label": "类型",
+      "name": "type",
+      "type": "enum",
+      "options": [
+        { "label": "feat", "value": "feat", "description": "新功能" },
+        { "label": "fix", "value": "fix", "description": "错误修复" },
+        { "label": "docs", "value": "docs", "description": "文档变更" }
+      ]
+    },
+    {
+      "label": "破坏性变更说明",
+      "name": "breaking",
+      "type": "text",
+      "multiline": true,
+      "isConditionalToken": true,
+      "linkedToken": "type",
+      "matchValue": "value == 'feat' || value == 'fix'"
+    },
+    {
+      "label": "问题编号",
+      "name": "issue",
+      "type": "text",
+      "prefix": "Closes #",
+      "isConditionalToken": true,
+      "linkedToken": "type",
+      "matchValue": "value in ['fix', 'hotfix']"
+    }
+  ]
+}
+```
+
+在此示例中：
+- `breaking` 字段仅在 `type` 为 `feat` 或 `fix` 时显示
+- `issue` 字段仅在 `type` 为 `fix` 或 `hotfix` 时显示
 
 ### 示例配置
 
