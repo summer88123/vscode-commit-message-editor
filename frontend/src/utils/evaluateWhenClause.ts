@@ -1,6 +1,6 @@
 /**
  * Evaluates a When Clause expression against a context object.
- * 
+ *
  * Supports:
  * - Literal match fallback: "bug" => value == "bug"
  * - Comparison operators: ==, !=, <, >, <=, >=
@@ -8,7 +8,7 @@
  * - In operator: value in ['a', 'b']
  * - Regex match: value =~ /pattern/flags
  * - Parentheses for grouping
- * 
+ *
  * @param expression The When Clause expression to evaluate
  * @param context The context object containing variables
  * @returns true if the expression evaluates to true, false otherwise
@@ -18,11 +18,6 @@ export default function evaluateWhenClause(
   context: Record<string, unknown>
 ): boolean {
   try {
-    // Literal fallback: if no operators or special chars, treat as literal match
-    if (!/[&|!<>=~()\[\]]/.test(expression)) {
-      return context.value === expression;
-    }
-
     const tokens = tokenize(expression);
     const ast = parse(tokens);
     return evaluate(ast, context);
@@ -264,7 +259,10 @@ class Parser {
   private parseOrExpression(): ASTNode {
     let left = this.parseAndExpression();
 
-    while (this.current().type === TokenType.OPERATOR && this.current().value === '||') {
+    while (
+      this.current().type === TokenType.OPERATOR &&
+      this.current().value === '||'
+    ) {
       const operator = this.advance().value;
       const right = this.parseAndExpression();
       left = {type: 'BinaryOp', operator, left, right} as BinaryOpNode;
@@ -276,7 +274,10 @@ class Parser {
   private parseAndExpression(): ASTNode {
     let left = this.parseComparisonExpression();
 
-    while (this.current().type === TokenType.OPERATOR && this.current().value === '&&') {
+    while (
+      this.current().type === TokenType.OPERATOR &&
+      this.current().value === '&&'
+    ) {
       const operator = this.advance().value;
       const right = this.parseComparisonExpression();
       left = {type: 'BinaryOp', operator, left, right} as BinaryOpNode;
@@ -289,7 +290,10 @@ class Parser {
     let left = this.parseUnaryExpression();
 
     const compOps = ['==', '!=', '<', '>', '<=', '>=', 'in', '=~'];
-    while (this.current().type === TokenType.OPERATOR && compOps.includes(this.current().value)) {
+    while (
+      this.current().type === TokenType.OPERATOR &&
+      compOps.includes(this.current().value)
+    ) {
       const operator = this.advance().value;
       const right = this.parseUnaryExpression();
       left = {type: 'BinaryOp', operator, left, right} as BinaryOpNode;
@@ -299,7 +303,10 @@ class Parser {
   }
 
   private parseUnaryExpression(): ASTNode {
-    if (this.current().type === TokenType.OPERATOR && this.current().value === '!') {
+    if (
+      this.current().type === TokenType.OPERATOR &&
+      this.current().value === '!'
+    ) {
       const operator = this.advance().value;
       const operand = this.parseUnaryExpression();
       return {type: 'UnaryOp', operator, operand} as UnaryOpNode;
@@ -393,11 +400,16 @@ function evaluate(node: ASTNode, context: Record<string, unknown>): boolean {
         case '>=':
           return (left as number) >= (right as number);
         case '&&':
-          return evaluate(binNode.left, context) && evaluate(binNode.right, context);
+          return (
+            evaluate(binNode.left, context) && evaluate(binNode.right, context)
+          );
         case '||':
-          return evaluate(binNode.left, context) || evaluate(binNode.right, context);
+          return (
+            evaluate(binNode.left, context) || evaluate(binNode.right, context)
+          );
         case 'in':
-          if (!Array.isArray(right)) throw new Error('Right operand of "in" must be an array');
+          if (!Array.isArray(right))
+            throw new Error('Right operand of "in" must be an array');
           return (right as unknown[]).includes(left);
         case '=~': {
           const regexNode = binNode.right as RegexNode;
@@ -422,7 +434,10 @@ function evaluate(node: ASTNode, context: Record<string, unknown>): boolean {
   }
 }
 
-function evaluateValue(node: ASTNode, context: Record<string, unknown>): unknown {
+function evaluateValue(
+  node: ASTNode,
+  context: Record<string, unknown>
+): unknown {
   switch (node.type) {
     case 'Literal':
       return (node as LiteralNode).value;

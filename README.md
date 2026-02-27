@@ -85,7 +85,7 @@ token 对象数组。它定义了表单字段。下表显示了 token 对象的�
 
 要创建条件 token，需要设置以下属性：
 
-- `linkedToken: "token_name"` - 指定关联的 token 名称（字符串）
+- `linkedToken: "token_name"` - 指定关联的 token 名称
 - `matchValue: "expression"` - 定义条件表达式
 
 **注意：** 如果 `linkedToken` 存在但 `matchValue` 为空或未定义，该 token 将不会显示（条件视为不匹配）。

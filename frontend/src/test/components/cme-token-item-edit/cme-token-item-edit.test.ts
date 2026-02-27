@@ -233,7 +233,7 @@ describe('cme-token-item-edit', () => {
       const linkedToken = el.shadowRoot?.getElementById('linkedToken');
 
       linkedToken?.dispatchEvent(
-        new CustomEvent('vsc-change', {detail: {value: 'test token'}})
+        new CustomEvent('vsc-change', {detail: {value: ['test token']}})
       );
 
       await el.updateComplete;
@@ -246,7 +246,7 @@ describe('cme-token-item-edit', () => {
       await el.updateComplete;
 
       expect(el.token).to.deep.eq({
-        linkedToken: 'test token',
+        linkedToken: ['test token'],
         matchValue: 'test value',
         label: '',
         type: 'text',

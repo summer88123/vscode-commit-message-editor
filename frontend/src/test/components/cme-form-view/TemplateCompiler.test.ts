@@ -134,7 +134,7 @@ const createTokens = (): Token[] => {
       prefix: 'Root cause: ',
       type: 'text',
       linkedToken: 'issue_type',
-      matchValue: 'bug',
+      matchValue: "issue_type == 'bug'",
     },
     {
       label: 'Fix',
@@ -142,7 +142,7 @@ const createTokens = (): Token[] => {
       prefix: 'Fix: ',
       type: 'text',
       linkedToken: 'issue_type',
-      matchValue: 'bug',
+      matchValue: "issue_type == 'bug'",
     },
   ]
 };
@@ -233,7 +233,7 @@ describe('TemplateCompiler', () => {
         prefix: 'Root cause: ',
         type: 'text',
         linkedToken: 'issue_type',
-        matchValue: "value == 'bug'",
+        matchValue: "issue_type == 'bug'",
       },
     ];
     const tokenValues = {
@@ -409,6 +409,108 @@ describe('TemplateCompiler', () => {
       type: 'feat',
       description: 'test description',
       conditional_field: 'should not appear',
+    };
+
+    const compiler = new TemplateCompiler(template, tokens, tokenValues);
+    const result = compiler.compile();
+
+    let expected = '';
+    expected += 'feat: test description';
+
+    expect(result).to.eq(expected);
+  });
+
+  it('conditional token with multiple linkedTokens should work correctly', () => {
+    const template = ['{type}: {description}', '', '{conditional_field}'];
+    const tokens: Token[] = [
+      {
+        label: 'Type',
+        name: 'type',
+        type: 'enum',
+        options: [
+          {label: 'Feature', value: 'feat'},
+          {label: 'Fix', value: 'fix'},
+        ],
+      },
+      {
+        label: 'Issue',
+        name: 'issue',
+        type: 'enum',
+        options: [
+          {label: 'Customer Feedback', value: '客户反馈'},
+          {label: 'Internal', value: '内部'},
+        ],
+      },
+      {
+        label: 'Description',
+        name: 'description',
+        type: 'text',
+      },
+      {
+        label: 'Conditional field',
+        name: 'conditional_field',
+        type: 'text',
+        linkedToken: ['issue', 'type'],
+        matchValue: "issue =~ /客户反馈/ && type == 'fix'",
+      },
+    ];
+    const tokenValues = {
+      type: 'fix',
+      issue: '客户反馈',
+      description: 'test description',
+      conditional_field: 'This should appear',
+    };
+
+    const compiler = new TemplateCompiler(template, tokens, tokenValues);
+    const result = compiler.compile();
+
+    let expected = '';
+    expected += 'fix: test description\n';
+    expected += '\n';
+    expected += 'This should appear';
+
+    expect(result).to.eq(expected);
+  });
+
+  it('conditional token with multiple linkedTokens should not render when condition fails', () => {
+    const template = ['{type}: {description}', '', '{conditional_field}'];
+    const tokens: Token[] = [
+      {
+        label: 'Type',
+        name: 'type',
+        type: 'enum',
+        options: [
+          {label: 'Feature', value: 'feat'},
+          {label: 'Fix', value: 'fix'},
+        ],
+      },
+      {
+        label: 'Issue',
+        name: 'issue',
+        type: 'enum',
+        options: [
+          {label: 'Customer Feedback', value: '客户反馈'},
+          {label: 'Internal', value: '内部'},
+        ],
+      },
+      {
+        label: 'Description',
+        name: 'description',
+        type: 'text',
+      },
+      {
+        label: 'Conditional field',
+        name: 'conditional_field',
+        type: 'text',
+        linkedToken: ['issue', 'type'],
+        matchValue: "issue =~ /客户反馈/ && type == 'fix'",
+      },
+    ];
+    const tokenValues = {
+      type: 'feat',  // condition fails because type is 'feat', not 'fix'
+      issue: '客户反馈',
+      description: 'test description',
+      conditional_field: 'This should NOT appear',
     };
 
     const compiler = new TemplateCompiler(template, tokens, tokenValues);

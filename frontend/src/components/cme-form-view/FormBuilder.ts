@@ -44,9 +44,20 @@ class FormBuilder {
   build(): TemplateResult[] {
     const formElements = this._tokens.map((token) => {
       if (token.linkedToken) {
-        const linkedValue = this.tokenValues?.[token.linkedToken];
         // matchValue 为空时，token 不显示
-        if (!token.matchValue || !evaluateWhenClause(token.matchValue, { value: linkedValue })) {
+        if (!token.matchValue) {
+          return html`${nothing}`;
+        }
+        
+        // 构建上下文：收集所有 linkedToken 的值
+        const context: Record<string, string | string[]> = {};
+        const tokens = Array.isArray(token.linkedToken) ? token.linkedToken : [token.linkedToken];
+        
+        tokens.forEach(tokenName => {
+          context[tokenName] = this.tokenValues?.[tokenName] || '';
+        });
+        
+        if (!evaluateWhenClause(token.matchValue, context)) {
           return html`${nothing}`;
         }
       }

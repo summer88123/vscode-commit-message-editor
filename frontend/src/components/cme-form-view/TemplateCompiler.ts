@@ -26,7 +26,19 @@ class TemplateCompiler {
       
       if (linkedToken) {
         // matchValue 为空时，条件不匹配
-        canShowConditionallyRendered = !!matchValue && evaluateWhenClause(matchValue, { value: this._tokenValues[linkedToken] });
+        if (!matchValue) {
+          canShowConditionallyRendered = false;
+        } else {
+          // 构建上下文：收集所有 linkedToken 的值
+          const context: Record<string, string | string[]> = {};
+          const tokens = Array.isArray(linkedToken) ? linkedToken : [linkedToken];
+          
+          tokens.forEach(tokenName => {
+            context[tokenName] = this._tokenValues[tokenName] || '';
+          });
+          
+          canShowConditionallyRendered = evaluateWhenClause(matchValue, context);
+        }
       }
       
       value = value && canShowConditionallyRendered ? prefix + value + suffix : '';

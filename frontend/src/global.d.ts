@@ -79,7 +79,7 @@ declare global {
     separator?: string;
     prefix?: string;
     suffix?: string;
-    linkedToken?: string;
+    linkedToken?: string | string[];
     matchValue?: string;
   }
 

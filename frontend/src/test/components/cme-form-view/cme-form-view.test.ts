@@ -145,7 +145,7 @@ const createConfig = (): ExtensionConfig => {
         prefix: 'Root cause: ',
         type: 'text',
         linkedToken: 'issue_type',
-        matchValue: 'bug',
+        matchValue: "issue_type == 'bug'",
       },
       {
         label: 'Fix',
@@ -153,7 +153,7 @@ const createConfig = (): ExtensionConfig => {
         prefix: 'Fix: ',
         type: 'text',
         linkedToken: 'issue_type',
-        matchValue: 'bug',
+        matchValue: "issue_type == 'bug'",
       },
     ],
     reduceEmptyLines: true,

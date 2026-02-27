@@ -7,6 +7,7 @@ import '@bendera/vscode-webview-elements/dist/vscode-form-group';
 import '@bendera/vscode-webview-elements/dist/vscode-icon';
 import '@bendera/vscode-webview-elements/dist/vscode-inputbox';
 import '@bendera/vscode-webview-elements/dist/vscode-label';
+import '@bendera/vscode-webview-elements/dist/vscode-multi-select';
 import '@bendera/vscode-webview-elements/dist/vscode-option';
 import '@bendera/vscode-webview-elements/dist/vscode-single-select';
 import './cme-token-options-edit';
@@ -129,7 +130,7 @@ export class TokenItemEdit extends LitElement {
       retval.options = this._options;
     }
 
-    if (this._linkedToken) {
+    if (this._linkedToken && (Array.isArray(this._linkedToken) ? this._linkedToken.length > 0 : true)) {
       retval.linkedToken = this._linkedToken;
       retval.matchValue = this._matchValue;
     }
@@ -195,7 +196,7 @@ export class TokenItemEdit extends LitElement {
   private _value = '';
 
   @state()
-  private _linkedToken?: string;
+  private _linkedToken?: string | string[];
 
   @state()
   private _matchValue = '';
@@ -282,7 +283,7 @@ export class TokenItemEdit extends LitElement {
   }
 
   private _onLinkedTokenChange(ev: CustomEvent) {
-    const val = (ev.detail.value as string);
+    const val = ev.detail.value as string | string[];
 
     this._linkedToken = val;
     this._matchValue = '';
@@ -682,19 +683,23 @@ export class TokenItemEdit extends LitElement {
     const linkedTokenWidget = html`
       <vscode-form-group variant="horizontal" class="${classMap({ disabled: !this.tokenOptions?.length })}">
         <vscode-label for="linkedToken">Linked Token</vscode-label>
-        <vscode-single-select
+        <vscode-multi-select
           id="linkedToken"
           name="linkedToken"
           combobox
           @vsc-change="${this._onLinkedTokenChange}"
         >
-          <vscode-option hidden ?selected="${!this._linkedToken}"> </vscode-option>
-          ${this.tokenOptions.map(token => html`
-            <vscode-option ?selected="${this._linkedToken === token.name}">
-              ${token.name}
-            </vscode-option>
-          `)}
-        </vscode-single-select>
+          ${this.tokenOptions.map(token => {
+            const isSelected = Array.isArray(this._linkedToken)
+              ? this._linkedToken.includes(token.name)
+              : this._linkedToken === token.name;
+            return html`
+              <vscode-option ?selected="${isSelected}">
+                ${token.name}
+              </vscode-option>
+            `;
+          })}
+        </vscode-multi-select>
       </vscode-form-group>
     `;
 
@@ -708,7 +713,7 @@ export class TokenItemEdit extends LitElement {
           @vsc-input="${this._onMatchValueChange}"
         ></vscode-inputbox>
         <p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.8;">
-          Examples: <code>bug</code>, <code>value == 'feat'</code>, <code>value != 'chore'</code>, <code>value in ['fix', 'hotfix']</code>
+          Examples: <code>type == 'feat'</code>, <code>issue =~ /some key/</code>, <code>type in ['fix', 'hotfix']</code>, <code>issue =~ /some key/ && type == 'fix'</code>
         </p>
       </vscode-form-group>
     `;
