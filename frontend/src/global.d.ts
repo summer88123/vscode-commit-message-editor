@@ -79,7 +79,6 @@ declare global {
     separator?: string;
     prefix?: string;
     suffix?: string;
-    isConditionalToken?: boolean;
     linkedToken?: string;
     matchValue?: string;
   }
