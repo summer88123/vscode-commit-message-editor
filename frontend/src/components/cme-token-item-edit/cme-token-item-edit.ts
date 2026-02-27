@@ -660,19 +660,13 @@ export class TokenItemEdit extends LitElement {
 
     const shownTextWidget = html`
       <vscode-form-group>
-        <vscode-label for="shown">Match Value / Expression</vscode-label>
+        <vscode-label for="shown">Shown</vscode-label>
         <vscode-inputbox
           value="${this._shown}"
           id="shown"
           name="shown"
           @vsc-input="${this._onShownChange}"
         ></vscode-inputbox>
-        <p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.8;">
-          Examples: <code>type == 'feat'</code>,
-          <code>issue =~ /some key/</code>,
-          <code>type in ['fix', 'hotfix']</code>,
-          <code>issue =~ /some key/ && type == 'fix'</code>
-        </p>
       </vscode-form-group>
     `;
 
