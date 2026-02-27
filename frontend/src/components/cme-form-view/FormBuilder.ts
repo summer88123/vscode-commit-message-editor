@@ -43,9 +43,10 @@ class FormBuilder {
 
   build(): TemplateResult[] {
     const formElements = this._tokens.map((token) => {
-      if (token.isConditionalToken && token.linkedToken && token.matchValue) {
+      if (token.linkedToken) {
         const linkedValue = this.tokenValues?.[token.linkedToken];
-        if (!evaluateWhenClause(token.matchValue, { value: linkedValue })) {
+        // matchValue 为空时，token 不显示
+        if (!token.matchValue || !evaluateWhenClause(token.matchValue, { value: linkedValue })) {
           return html`${nothing}`;
         }
       }
