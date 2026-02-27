@@ -16,11 +16,14 @@ Upgrade conditional tokens so linkedToken stores a token name string and matchVa
 ## Proposed Data Model
 ```ts
 interface Token {
-  isConditionalToken?: boolean;
-  linkedToken?: string; // token name
-  matchValue?: string; // direct value or expression
+  linkedToken?: string; // token name, presence indicates conditional token
+  matchValue?: string; // direct value or expression, empty = no match
 }
 ```
+
+**语义说明：**
+- `linkedToken` 存在 = 这是条件 token
+- `matchValue` 为空或未定义 = 条件不匹配，token 不显示
 
 ## Expression Semantics
 - If matchValue is a plain literal (no operators), treat as `value == matchValue`.
@@ -42,6 +45,7 @@ Invalid expressions evaluate to false and surface a UI hint.
 - Linked Token dropdown keeps token.name display and stores name string.
 - Match Value becomes a single text input for direct value or expression.
 - Add helper text with example expressions.
+- No separate checkbox needed (linkedToken presence indicates conditional token).
 
 ## Evaluation Flow
 - FormBuilder and TemplateCompiler use a shared evaluator:
@@ -52,3 +56,14 @@ Invalid expressions evaluate to false and surface a UI hint.
 ## Testing Strategy
 - Unit tests for expression evaluator.
 - Update form/template tests for string linkedToken and expression usage.
+
+## 2026-02-27 简化更新
+
+移除了 `isConditionalToken` 字段，简化了条件判断逻辑：
+
+- **判断依据：** 仅检查 `linkedToken` 是否存在
+- **空 matchValue 语义：** 条件不匹配，token 不显示
+- **优势：**
+  - 减少冗余字段
+  - 语义更清晰（linkedToken 存在即为条件 token）
+  - UI 更简洁（无需额外 checkbox）
