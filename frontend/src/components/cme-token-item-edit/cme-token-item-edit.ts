@@ -39,7 +39,6 @@ export class TokenItemEdit extends LitElement {
       options,
       lines,
       value,
-      isConditionalToken,
       linkedToken,
       matchValue
     } = val;
@@ -63,7 +62,6 @@ export class TokenItemEdit extends LitElement {
     this._options = options ?? [];
     this._lines = !isUndefined(lines) ? String(lines) : '';
     this._value = value ?? '';
-    this._isConditionalToken = isConditionalToken ?? false;
     this._linkedToken = linkedToken;
     this._matchValue = matchValue ?? '';
   }
@@ -131,8 +129,7 @@ export class TokenItemEdit extends LitElement {
       retval.options = this._options;
     }
 
-    if (this._isConditionalToken) {
-      retval.isConditionalToken = true;
+    if (this._linkedToken) {
       retval.linkedToken = this._linkedToken;
       retval.matchValue = this._matchValue;
     }
@@ -196,9 +193,6 @@ export class TokenItemEdit extends LitElement {
 
   @state()
   private _value = '';
-
-  @state()
-  private _isConditionalToken = false;
 
   @state()
   private _linkedToken?: string;
@@ -285,14 +279,6 @@ export class TokenItemEdit extends LitElement {
 
   private _onOptionsSave(ev: CustomEvent<EnumTokenOption[]>) {
     this._options = ev.detail;
-  }
-
-  private _onIsConditionalTokenChange(ev: CustomEvent) {
-    this._isConditionalToken = ev.detail.checked;
-    if (!ev.detail.checked) {
-      this._linkedToken = undefined;
-      this._matchValue = '';
-    }
   }
 
   private _onLinkedTokenChange(ev: CustomEvent) {
@@ -693,29 +679,16 @@ export class TokenItemEdit extends LitElement {
       </div>
     `;
 
-    const isConditionalTokenWidget = html`
-      <vscode-form-group class="${classMap({ disabled: !this.tokenOptions?.length })}">
-        <vscode-label for="isConditionalToken">Conditional Token</vscode-label>
-        <vscode-checkbox
-          id="isConditionalToken"
-          name="flags"
-          value="isConditionalToken"
-          ?checked="${this._isConditionalToken}"
-          @vsc-change="${this._onIsConditionalTokenChange}"
-        ></vscode-checkbox>
-      </vscode-form-group>
-    `;
-
     const linkedTokenWidget = html`
-      <vscode-form-group variant="horizontal">
-        <vscode-label for="linkedToken" required>Linked Token</vscode-label>
+      <vscode-form-group variant="horizontal" class="${classMap({ disabled: !this.tokenOptions?.length })}">
+        <vscode-label for="linkedToken">Linked Token</vscode-label>
         <vscode-single-select
           id="linkedToken"
           name="linkedToken"
           combobox
           @vsc-change="${this._onLinkedTokenChange}"
         >
-          <vscode-option hidden ?selected="true"> </vscode-option>
+          <vscode-option hidden ?selected="${!this._linkedToken}"> </vscode-option>
           ${this.tokenOptions.map(token => html`
             <vscode-option ?selected="${this._linkedToken === token.name}">
               ${token.name}
@@ -740,7 +713,7 @@ export class TokenItemEdit extends LitElement {
       </vscode-form-group>
     `;
 
-    const _matchValueWidget = !this._isConditionalToken || !this._linkedToken
+    const _matchValueWidget = !this._linkedToken
       ? nothing
       : matchValueTextWidget;
 
@@ -752,8 +725,7 @@ export class TokenItemEdit extends LitElement {
           ${multilineWidget} ${monospaceWidget} ${linesWidget} ${maxLinesWidget}
           ${maxLengthWidget} ${maxLineLengthWidget} ${multipleWidget} ${separatorWidget}
           ${comboboxWidget} ${optionsWidget}
-          ${isConditionalTokenWidget}
-          ${this._isConditionalToken ? linkedTokenWidget : nothing}
+          ${linkedTokenWidget}
           ${_matchValueWidget}
           ${this._isOptionsWindowVisible ? optionsWindow : nothing}
           <vscode-form-group>
