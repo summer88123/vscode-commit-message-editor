@@ -134,7 +134,7 @@ const createTokens = (): Token[] => {
       prefix: 'Root cause: ',
       type: 'text',
       isConditionalToken: true,
-      linkedToken: issueTypeToken,
+      linkedToken: 'issue_type',
       matchValue: 'bug',
     },
     {
@@ -143,7 +143,7 @@ const createTokens = (): Token[] => {
       prefix: 'Fix: ',
       type: 'text',
       isConditionalToken: true,
-      linkedToken: issueTypeToken,
+      linkedToken: 'issue_type',
       matchValue: 'bug',
     },
   ]

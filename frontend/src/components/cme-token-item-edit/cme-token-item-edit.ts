@@ -201,7 +201,7 @@ export class TokenItemEdit extends LitElement {
   private _isConditionalToken = false;
 
   @state()
-  private _linkedToken?: Token;
+  private _linkedToken?: string;
 
   @state()
   private _matchValue = '';
@@ -298,7 +298,7 @@ export class TokenItemEdit extends LitElement {
   private _onLinkedTokenChange(ev: CustomEvent) {
     const val = (ev.detail.value as string);
 
-    this._linkedToken = this.tokenOptions.find((t) => t.name === val);
+    this._linkedToken = val;
     this._matchValue = '';
   }
 
@@ -308,7 +308,8 @@ export class TokenItemEdit extends LitElement {
 
   private _onMatchValueEnumChange(ev: CustomEvent) {
     const valueLabel = ev.detail.value as string;
-    this._matchValue = this._linkedToken?.options?.find((o) => o.label === valueLabel)?.value as string;
+    const linkedTokenObj = this.tokenOptions.find((t) => t.name === this._linkedToken);
+    this._matchValue = linkedTokenObj?.options?.find((o) => o.label === valueLabel)?.value as string;
   }
 
   private _onEditClick() {
@@ -722,7 +723,7 @@ export class TokenItemEdit extends LitElement {
         >
           <vscode-option hidden ?selected="true"> </vscode-option>
           ${this.tokenOptions.map(token => html`
-            <vscode-option ?selected="${this._linkedToken?.name === token.name}">
+            <vscode-option ?selected="${this._linkedToken === token.name}">
               ${token.name}
             </vscode-option>
           `)}
@@ -738,7 +739,7 @@ export class TokenItemEdit extends LitElement {
           name="matchValue"
           @vsc-change="${this._onMatchValueEnumChange}"
         >
-          ${this._linkedToken?.options?.map(option => html`
+          ${this.tokenOptions.find((t) => t.name === this._linkedToken)?.options?.map(option => html`
             <vscode-option ?selected="${this._matchValue === option.value}"
               >${option.label}</vscode-option
             >
@@ -777,11 +778,12 @@ export class TokenItemEdit extends LitElement {
       </vscode-form-group>
     `;
 
+    const linkedTokenObj = this.tokenOptions.find((t) => t.name === this._linkedToken);
     const _matchValueWidget = !this._isConditionalToken || !this._linkedToken
       ? nothing
-      : this._linkedToken.type === 'boolean'
+      : linkedTokenObj?.type === 'boolean'
         ? _matchValueBooleanWidget
-        : this._linkedToken.type === 'enum'
+        : linkedTokenObj?.type === 'enum'
           ? matchValueEnumWidget
           : matchValueTextWidget;
 

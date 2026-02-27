@@ -254,7 +254,7 @@ describe('cme-token-item-edit', () => {
 
       expect(el.token).to.deep.eq({
         isConditionalToken: true,
-        linkedToken: el.tokens[0],
+        linkedToken: 'test token',
         matchValue: 'test value',
         label: '',
         type: 'text',
@@ -296,14 +296,15 @@ describe('cme-token-item-edit', () => {
       )) as TokenItemEdit;
 
       el.active = true;
+      el.tokens = [{
+        name: 'test token',
+        label: 'Test token',
+        type: 'text',
+      }];
       el.token = {
         ...el.token,
         isConditionalToken: true,
-        linkedToken: {
-          name: 'test token',
-          label: 'Test token',
-          type: 'text',
-        }
+        linkedToken: 'test token'
       };
 
       await el.updateComplete;
@@ -319,26 +320,27 @@ describe('cme-token-item-edit', () => {
       )) as TokenItemEdit;
 
       el.active = true;
+      el.tokens = [{
+        name: 'test token',
+        label: 'Test token',
+        type: 'enum',
+        options: [
+          {
+            label: 'Test option 1',
+            description: '',
+            value: 'testoption1'
+          },
+          {
+            label: 'Test option 2',
+            description: '',
+            value: 'testoption2'
+          },
+        ]
+      }];
       el.token = {
         ...el.token,
         isConditionalToken: true,
-        linkedToken: {
-          name: 'test token',
-          label: 'Test token',
-          type: 'enum',
-          options: [
-            {
-              label: 'Test option 1',
-              description: '',
-              value: 'testoption1'
-            },
-            {
-              label: 'Test option 2',
-              description: '',
-              value: 'testoption2'
-            },
-          ]
-        }
+        linkedToken: 'test token'
       };
 
       await el.updateComplete;
@@ -358,14 +360,15 @@ describe('cme-token-item-edit', () => {
       )) as TokenItemEdit;
 
       el.active = true;
+      el.tokens = [{
+        name: 'test token',
+        label: 'Test token',
+        type: 'boolean',
+      }];
       el.token = {
         ...el.token,
         isConditionalToken: true,
-        linkedToken: {
-          name: 'test token',
-          label: 'Test token',
-          type: 'boolean',
-        }
+        linkedToken: 'test token'
       };
 
       await el.updateComplete;

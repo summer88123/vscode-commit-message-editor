@@ -80,7 +80,7 @@ declare global {
     prefix?: string;
     suffix?: string;
     isConditionalToken?: boolean;
-    linkedToken?: Token;
+    linkedToken?: string;
     matchValue?: string;
   }
 

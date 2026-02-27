@@ -42,7 +42,7 @@ class FormBuilder {
 
   build(): TemplateResult[] {
     const formElements = this._tokens.map((token) => {
-      if (token.isConditionalToken && token.linkedToken && token.matchValue && this.tokenValues?.[token.linkedToken.name] !== token.matchValue) {
+      if (token.isConditionalToken && token.linkedToken && token.matchValue && this.tokenValues?.[token.linkedToken] !== token.matchValue) {
         return html`${nothing}`;
       }
       switch (token.type) {
