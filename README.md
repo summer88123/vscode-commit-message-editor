@@ -74,8 +74,7 @@ token 对象数组。它定义了表单字段。下表显示了 token 对象的�
 | options[_{n}_].label       | string  | 选项的值                                                                                                                                                          | enum      |
 | options[_{n}_].description | string  | 选项的详细描述                                                                                                                                                    | enum      |
 | provider                   | string  | 动态选项提供者的 ID（dynamic-enum 必需）                                                                                                                          | dynamic-enum |
-| isConditionalToken         | boolean | 标记此 token 为条件 token，其可见性由关联 token 的值决定                                                                                                         | 所有       |
-| linkedToken                | string  | 关联 token 的名称（isConditionalToken 为 true 时必需）                                                                                                           | 所有       |
+| linkedToken                | string  | 关联 token 的名称。设置此字段后，该 token 成为条件 token                                                                                                           | 所有       |
 | matchValue                 | string  | 条件表达式或字面值，用于确定此 token 何时可见。支持 When Clause 风格的表达式                                                                                     | 所有       |
 
 ### 条件 Token
@@ -86,9 +85,10 @@ token 对象数组。它定义了表单字段。下表显示了 token 对象的�
 
 要创建条件 token，需要设置以下属性：
 
-- `isConditionalToken: true` - 标记此 token 为条件 token
 - `linkedToken: "token_name"` - 指定关联的 token 名称（字符串）
 - `matchValue: "expression"` - 定义条件表达式
+
+**注意：** 如果 `linkedToken` 存在但 `matchValue` 为空或未定义，该 token 将不会显示（条件视为不匹配）。
 
 #### matchValue 表达式语法
 
@@ -154,7 +154,6 @@ token 对象数组。它定义了表单字段。下表显示了 token 对象的�
       "name": "breaking",
       "type": "text",
       "multiline": true,
-      "isConditionalToken": true,
       "linkedToken": "type",
       "matchValue": "value == 'feat' || value == 'fix'"
     },
@@ -163,7 +162,6 @@ token 对象数组。它定义了表单字段。下表显示了 token 对象的�
       "name": "issue",
       "type": "text",
       "prefix": "Closes #",
-      "isConditionalToken": true,
       "linkedToken": "type",
       "matchValue": "value in ['fix', 'hotfix']"
     }
