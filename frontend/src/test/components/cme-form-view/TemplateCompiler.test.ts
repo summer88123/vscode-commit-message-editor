@@ -133,7 +133,6 @@ const createTokens = (): Token[] => {
       name: 'root_cause',
       prefix: 'Root cause: ',
       type: 'text',
-      isConditionalToken: true,
       linkedToken: 'issue_type',
       matchValue: 'bug',
     },
@@ -142,7 +141,6 @@ const createTokens = (): Token[] => {
       name: 'fix',
       prefix: 'Fix: ',
       type: 'text',
-      isConditionalToken: true,
       linkedToken: 'issue_type',
       matchValue: 'bug',
     },
@@ -227,14 +225,13 @@ describe('TemplateCompiler', () => {
       ],
     };
     const tokens: Token[] = [
-      ...createTokens().filter(t => !t.isConditionalToken),
+      ...createTokens().filter(t => !t.linkedToken),
       issueTypeToken,
       {
         label: 'Root cause',
         name: 'root_cause',
         prefix: 'Root cause: ',
         type: 'text',
-        isConditionalToken: true,
         linkedToken: 'issue_type',
         matchValue: "value == 'bug'",
       },
