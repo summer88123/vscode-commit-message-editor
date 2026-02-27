@@ -303,13 +303,7 @@ export class TokenItemEdit extends LitElement {
   }
 
   private _onMatchValueChange(ev: CustomEvent) {
-    this._matchValue = ev.detail.value as string;
-  }
-
-  private _onMatchValueEnumChange(ev: CustomEvent) {
-    const valueLabel = ev.detail.value as string;
-    const linkedTokenObj = this.tokenOptions.find((t) => t.name === this._linkedToken);
-    this._matchValue = linkedTokenObj?.options?.find((o) => o.label === valueLabel)?.value as string;
+    this._matchValue = ev.detail;
   }
 
   private _onEditClick() {
@@ -731,61 +725,24 @@ export class TokenItemEdit extends LitElement {
       </vscode-form-group>
     `;
 
-    const matchValueEnumWidget = html`
-      <vscode-form-group variant="horizontal">
-        <vscode-label for="matchValue">Match Value</vscode-label>
-        <vscode-single-select
-          id="matchValue"
-          name="matchValue"
-          @vsc-change="${this._onMatchValueEnumChange}"
-        >
-          ${this.tokenOptions.find((t) => t.name === this._linkedToken)?.options?.map(option => html`
-            <vscode-option ?selected="${this._matchValue === option.value}"
-              >${option.label}</vscode-option
-            >
-          `)}
-        </vscode-single-select>
-      </vscode-form-group>
-    `;
-
     const matchValueTextWidget = html`
       <vscode-form-group>
-        <vscode-label for="matchValue">Match Value</vscode-label>
+        <vscode-label for="matchValue">Match Value / Expression</vscode-label>
         <vscode-inputbox
           value="${this._matchValue}"
           id="matchValue"
           name="matchValue"
           @vsc-input="${this._onMatchValueChange}"
         ></vscode-inputbox>
+        <p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.8;">
+          Examples: <code>bug</code>, <code>value == 'feat'</code>, <code>value != 'chore'</code>, <code>value in ['fix', 'hotfix']</code>
+        </p>
       </vscode-form-group>
     `;
 
-    const _matchValueBooleanWidget = html`
-      <vscode-form-group variant="horizontal">
-        <vscode-label for="matchValue">Match Value</vscode-label>
-        <vscode-single-select
-          id="matchValue"
-          name="matchValue"
-          @vsc-change="${this._onMatchValueChange}"
-        >
-          <vscode-option ?selected="${this._matchValue === 'true'}"
-            >true</vscode-option
-          >
-          <vscode-option ?selected="${this._matchValue === 'false'}"
-            >false</vscode-option
-          >
-        </vscode-single-select>
-      </vscode-form-group>
-    `;
-
-    const linkedTokenObj = this.tokenOptions.find((t) => t.name === this._linkedToken);
     const _matchValueWidget = !this._isConditionalToken || !this._linkedToken
       ? nothing
-      : linkedTokenObj?.type === 'boolean'
-        ? _matchValueBooleanWidget
-        : linkedTokenObj?.type === 'enum'
-          ? matchValueEnumWidget
-          : matchValueTextWidget;
+      : matchValueTextWidget;
 
     const activeView = html`
       <div>

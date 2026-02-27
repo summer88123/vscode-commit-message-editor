@@ -247,7 +247,7 @@ describe('cme-token-item-edit', () => {
       const matchValue = el.shadowRoot?.getElementById('matchValue');
 
       matchValue?.dispatchEvent(
-        new CustomEvent('vsc-input', {detail: {value: 'test value'}})
+        new CustomEvent('vsc-input', {detail: 'test value'})
       );
 
       await el.updateComplete;
@@ -314,7 +314,7 @@ describe('cme-token-item-edit', () => {
       expect(matchValueInput?.tagName.toLowerCase()).to.eq('vscode-inputbox');
     });
 
-    it('should render a select input if linked token is an enum token', async () => {
+    it('should render a text input for match value (supports expressions)', async () => {
       const el = (await fixture(
         html`<cme-token-item-edit></cme-token-item-edit>`
       )) as TokenItemEdit;
@@ -347,14 +347,15 @@ describe('cme-token-item-edit', () => {
 
       const matchValueInput = el.shadowRoot?.getElementById('matchValue');
       expect(matchValueInput).to.exist;
-      expect(matchValueInput?.tagName.toLowerCase()).to.eq('vscode-single-select');
-      const options = matchValueInput?.querySelectorAll('vscode-option');
-      expect(options?.length).to.eq(2);
-      expect(options?.item(0)?.textContent).to.eq('Test option 1');
-      expect(options?.item(1)?.textContent).to.eq('Test option 2');
+      expect(matchValueInput?.tagName.toLowerCase()).to.eq('vscode-inputbox');
+      
+      // Should have helper text with examples
+      const helperText = matchValueInput?.nextElementSibling;
+      expect(helperText?.tagName.toLowerCase()).to.eq('p');
+      expect(helperText?.textContent).to.include('Examples:');
     });
 
-    it('should render a select input if linked token is a boolean token', async () => {
+    it('should render a text input for boolean token (supports expressions)', async () => {
       const el = (await fixture(
         html`<cme-token-item-edit></cme-token-item-edit>`
       )) as TokenItemEdit;
@@ -375,11 +376,12 @@ describe('cme-token-item-edit', () => {
 
       const matchValueInput = el.shadowRoot?.getElementById('matchValue');
       expect(matchValueInput).to.exist;
-      expect(matchValueInput?.tagName.toLowerCase()).to.eq('vscode-single-select');
-      const options = matchValueInput?.querySelectorAll('vscode-option');
-      expect(options?.length).to.eq(2);
-      expect(options?.item(0)?.textContent).to.eq('true');
-      expect(options?.item(1)?.textContent).to.eq('false');
+      expect(matchValueInput?.tagName.toLowerCase()).to.eq('vscode-inputbox');
+      
+      // Should have helper text with examples
+      const helperText = matchValueInput?.nextElementSibling;
+      expect(helperText?.tagName.toLowerCase()).to.eq('p');
+      expect(helperText?.textContent).to.include('Examples:');
     });
   });
 });
