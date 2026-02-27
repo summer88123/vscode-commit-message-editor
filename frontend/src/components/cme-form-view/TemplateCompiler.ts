@@ -20,13 +20,13 @@ class TemplateCompiler {
   compile(): string {
     let compiled = this._template;
 
-    this._tokens.forEach(({ name, prefix = '', suffix = '', isConditionalToken, linkedToken, matchValue }) => {
+    this._tokens.forEach(({ name, prefix = '', suffix = '', linkedToken, matchValue }) => {
       let value = this._tokenValues[name] || '';
       let canShowConditionallyRendered = true;
       
-      if (isConditionalToken && linkedToken && matchValue) {
-        const linkedValue = this._tokenValues[linkedToken];
-        canShowConditionallyRendered = evaluateWhenClause(matchValue, { value: linkedValue });
+      if (linkedToken) {
+        // matchValue 为空时，条件不匹配
+        canShowConditionallyRendered = !!matchValue && evaluateWhenClause(matchValue, { value: this._tokenValues[linkedToken] });
       }
       
       value = value && canShowConditionallyRendered ? prefix + value + suffix : '';
