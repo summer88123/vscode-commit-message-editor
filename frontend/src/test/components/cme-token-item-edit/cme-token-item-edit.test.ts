@@ -230,13 +230,6 @@ describe('cme-token-item-edit', () => {
 
       await el.updateComplete;
 
-      const isConditionalToken = el.shadowRoot?.getElementById('isConditionalToken');
-
-      isConditionalToken?.dispatchEvent(
-        new CustomEvent('vsc-change', {detail: {checked: true}})
-      );
-
-      await el.updateComplete;
       const linkedToken = el.shadowRoot?.getElementById('linkedToken');
 
       linkedToken?.dispatchEvent(
@@ -253,7 +246,6 @@ describe('cme-token-item-edit', () => {
       await el.updateComplete;
 
       expect(el.token).to.deep.eq({
-        isConditionalToken: true,
         linkedToken: 'test token',
         matchValue: 'test value',
         label: '',
@@ -262,35 +254,19 @@ describe('cme-token-item-edit', () => {
       })
     });
 
-    it('should render Is conditional token checkbox', async () => {
+    it('should render a dropdown to select the linked token', async () => {
       const el = (await fixture(
         html`<cme-token-item-edit></cme-token-item-edit>`
       )) as TokenItemEdit;
 
       el.active = true;
-
-      await el.updateComplete;
-
-      expect(el.shadowRoot?.getElementById('isConditionalToken')).to.exist;
-    });
-
-    it('should render a dropdown to select the linked token if conditional token is checked', async () => {
-      const el = (await fixture(
-        html`<cme-token-item-edit></cme-token-item-edit>`
-      )) as TokenItemEdit;
-
-      el.active = true;
-      el.token = {
-        ...el.token,
-        isConditionalToken: true
-      };
 
       await el.updateComplete;
 
       expect(el.shadowRoot?.getElementById('linkedToken')).to.exist;
     });
 
-    it('should render match value text input if linked token is selected and token is conditional', async () => {
+    it('should render match value text input if linked token is selected', async () => {
       const el = (await fixture(
         html`<cme-token-item-edit></cme-token-item-edit>`
       )) as TokenItemEdit;
@@ -303,7 +279,6 @@ describe('cme-token-item-edit', () => {
       }];
       el.token = {
         ...el.token,
-        isConditionalToken: true,
         linkedToken: 'test token'
       };
 
@@ -339,7 +314,6 @@ describe('cme-token-item-edit', () => {
       }];
       el.token = {
         ...el.token,
-        isConditionalToken: true,
         linkedToken: 'test token'
       };
 
@@ -368,7 +342,6 @@ describe('cme-token-item-edit', () => {
       }];
       el.token = {
         ...el.token,
-        isConditionalToken: true,
         linkedToken: 'test token'
       };
 
