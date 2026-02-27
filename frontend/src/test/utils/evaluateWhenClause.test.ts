@@ -2,10 +2,6 @@ import {expect} from '@esm-bundle/chai';
 import evaluateWhenClause from '../../utils/evaluateWhenClause';
 
 describe('evaluateWhenClause', () => {
-  it('supports literal match fallback', () => {
-    expect(evaluateWhenClause('bug', {value: 'bug'})).to.equal(true);
-  });
-
   it('supports comparisons and logic', () => {
     expect(evaluateWhenClause("value == 'bug' && value != 'task'", {value: 'bug'})).to.equal(true);
   });

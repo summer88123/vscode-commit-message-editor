@@ -222,11 +222,13 @@ describe('cme-token-item-edit', () => {
       )) as TokenItemEdit;
 
       el.active = true;
-      el.tokens = [{
-        name: 'test token',
-        label: 'Test token',
-        type: 'text',
-      }];
+      el.tokens = [
+        {
+          name: 'test token',
+          label: 'Test token',
+          type: 'text',
+        },
+      ];
 
       await el.updateComplete;
 
@@ -237,9 +239,9 @@ describe('cme-token-item-edit', () => {
       );
 
       await el.updateComplete;
-      const matchValue = el.shadowRoot?.getElementById('matchValue');
+      const shown = el.shadowRoot?.getElementById('shown');
 
-      matchValue?.dispatchEvent(
+      shown?.dispatchEvent(
         new CustomEvent('vsc-input', {detail: 'test value'})
       );
 
@@ -247,11 +249,11 @@ describe('cme-token-item-edit', () => {
 
       expect(el.token).to.deep.eq({
         linkedToken: ['test token'],
-        matchValue: 'test value',
+        shown: 'test value',
         label: '',
         type: 'text',
         name: '',
-      })
+      });
     });
 
     it('should render a dropdown to select the linked token', async () => {
@@ -272,21 +274,23 @@ describe('cme-token-item-edit', () => {
       )) as TokenItemEdit;
 
       el.active = true;
-      el.tokens = [{
-        name: 'test token',
-        label: 'Test token',
-        type: 'text',
-      }];
+      el.tokens = [
+        {
+          name: 'test token',
+          label: 'Test token',
+          type: 'text',
+        },
+      ];
       el.token = {
         ...el.token,
-        linkedToken: 'test token'
+        linkedToken: 'test token',
       };
 
       await el.updateComplete;
 
-      const matchValueInput = el.shadowRoot?.getElementById('matchValue');
-      expect(matchValueInput).to.exist;
-      expect(matchValueInput?.tagName.toLowerCase()).to.eq('vscode-inputbox');
+      const shownInput = el.shadowRoot?.getElementById('shown');
+      expect(shownInput).to.exist;
+      expect(shownInput?.tagName.toLowerCase()).to.eq('vscode-inputbox');
     });
 
     it('should render a text input for match value (supports expressions)', async () => {
@@ -295,36 +299,38 @@ describe('cme-token-item-edit', () => {
       )) as TokenItemEdit;
 
       el.active = true;
-      el.tokens = [{
-        name: 'test token',
-        label: 'Test token',
-        type: 'enum',
-        options: [
-          {
-            label: 'Test option 1',
-            description: '',
-            value: 'testoption1'
-          },
-          {
-            label: 'Test option 2',
-            description: '',
-            value: 'testoption2'
-          },
-        ]
-      }];
+      el.tokens = [
+        {
+          name: 'test token',
+          label: 'Test token',
+          type: 'enum',
+          options: [
+            {
+              label: 'Test option 1',
+              description: '',
+              value: 'testoption1',
+            },
+            {
+              label: 'Test option 2',
+              description: '',
+              value: 'testoption2',
+            },
+          ],
+        },
+      ];
       el.token = {
         ...el.token,
-        linkedToken: 'test token'
+        linkedToken: 'test token',
       };
 
       await el.updateComplete;
 
-      const matchValueInput = el.shadowRoot?.getElementById('matchValue');
-      expect(matchValueInput).to.exist;
-      expect(matchValueInput?.tagName.toLowerCase()).to.eq('vscode-inputbox');
-      
+      const shownInput = el.shadowRoot?.getElementById('shown');
+      expect(shownInput).to.exist;
+      expect(shownInput?.tagName.toLowerCase()).to.eq('vscode-inputbox');
+
       // Should have helper text with examples
-      const helperText = matchValueInput?.nextElementSibling;
+      const helperText = shownInput?.nextElementSibling;
       expect(helperText?.tagName.toLowerCase()).to.eq('p');
       expect(helperText?.textContent).to.include('Examples:');
     });
@@ -335,24 +341,26 @@ describe('cme-token-item-edit', () => {
       )) as TokenItemEdit;
 
       el.active = true;
-      el.tokens = [{
-        name: 'test token',
-        label: 'Test token',
-        type: 'boolean',
-      }];
+      el.tokens = [
+        {
+          name: 'test token',
+          label: 'Test token',
+          type: 'boolean',
+        },
+      ];
       el.token = {
         ...el.token,
-        linkedToken: 'test token'
+        linkedToken: 'test token',
       };
 
       await el.updateComplete;
 
-      const matchValueInput = el.shadowRoot?.getElementById('matchValue');
-      expect(matchValueInput).to.exist;
-      expect(matchValueInput?.tagName.toLowerCase()).to.eq('vscode-inputbox');
-      
+      const shownInput = el.shadowRoot?.getElementById('shown');
+      expect(shownInput).to.exist;
+      expect(shownInput?.tagName.toLowerCase()).to.eq('vscode-inputbox');
+
       // Should have helper text with examples
-      const helperText = matchValueInput?.nextElementSibling;
+      const helperText = shownInput?.nextElementSibling;
       expect(helperText?.tagName.toLowerCase()).to.eq('p');
       expect(helperText?.textContent).to.include('Examples:');
     });

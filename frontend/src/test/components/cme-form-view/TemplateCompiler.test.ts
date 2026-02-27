@@ -26,7 +26,7 @@ const createTokens = (): Token[] => {
       {
         label: 'feature',
       },
-    ]
+    ],
   };
   return [
     {
@@ -134,7 +134,7 @@ const createTokens = (): Token[] => {
       prefix: 'Root cause: ',
       type: 'text',
       linkedToken: 'issue_type',
-      matchValue: "issue_type == 'bug'",
+      shown: "issue_type == 'bug'",
     },
     {
       label: 'Fix',
@@ -142,9 +142,9 @@ const createTokens = (): Token[] => {
       prefix: 'Fix: ',
       type: 'text',
       linkedToken: 'issue_type',
-      matchValue: "issue_type == 'bug'",
+      shown: "issue_type == 'bug'",
     },
-  ]
+  ];
 };
 
 const createTokenValues = (): TokenValueDTO => ({
@@ -154,8 +154,8 @@ const createTokenValues = (): TokenValueDTO => ({
   body: 'Test body',
   breaking_change: 'BREAKING CHANGE: ',
   issue_type: 'story',
-  root_cause: 'I\'m an idiot',
-  fix: 'Increased intelluct'
+  root_cause: "I'm an idiot",
+  fix: 'Increased intelluct',
 });
 
 describe('TemplateCompiler', () => {
@@ -184,7 +184,7 @@ describe('TemplateCompiler', () => {
     const tokenValues = {
       ...createTokenValues(),
       issue_type: 'bug',
-    }
+    };
 
     const compiler = new TemplateCompiler(template, tokens, tokenValues);
     const result = compiler.compile();
@@ -195,7 +195,7 @@ describe('TemplateCompiler', () => {
     expected += '\n';
     expected += 'Test body\n';
     expected += '\n';
-    expected += 'Root cause: I\'m an idiot\n';
+    expected += "Root cause: I'm an idiot\n";
     expected += '\n';
     expected += 'Fix: Increased intelluct\n';
     expected += '\n';
@@ -225,7 +225,7 @@ describe('TemplateCompiler', () => {
       ],
     };
     const tokens: Token[] = [
-      ...createTokens().filter(t => !t.linkedToken),
+      ...createTokens().filter((t) => !t.linkedToken),
       issueTypeToken,
       {
         label: 'Root cause',
@@ -233,7 +233,7 @@ describe('TemplateCompiler', () => {
         prefix: 'Root cause: ',
         type: 'text',
         linkedToken: 'issue_type',
-        matchValue: "issue_type == 'bug'",
+        shown: "issue_type == 'bug'",
       },
     ];
     const tokenValues = {
@@ -249,7 +249,7 @@ describe('TemplateCompiler', () => {
     expected += '\n';
     expected += 'Test body\n';
     expected += '\n';
-    expected += 'Root cause: I\'m an idiot\n';
+    expected += "Root cause: I'm an idiot\n";
     expected += '\n';
     expected += 'BREAKING CHANGE: ';
 
@@ -257,15 +257,7 @@ describe('TemplateCompiler', () => {
   });
 
   it('empty lines should be reduced', () => {
-    const template = [
-      '{test1}',
-      '',
-      '{test2}',
-      '',
-      '{test3}',
-      '',
-      '',
-    ];
+    const template = ['{test1}', '', '{test2}', '', '{test3}', '', ''];
     const tokens: Token[] = [
       {
         label: 'Test 1',
@@ -276,7 +268,8 @@ describe('TemplateCompiler', () => {
         label: 'Test 2',
         name: 'test2',
         type: 'text',
-      },{
+      },
+      {
         label: 'Test 3',
         name: 'test3',
         type: 'text',
@@ -300,15 +293,7 @@ describe('TemplateCompiler', () => {
   });
 
   it('empty lines should be kept', () => {
-    const template = [
-      '{test1}',
-      '',
-      '{test2}',
-      '',
-      '{test3}',
-      '',
-      '',
-    ];
+    const template = ['{test1}', '', '{test2}', '', '{test3}', '', ''];
     const tokens: Token[] = [
       {
         label: 'Test 1',
@@ -319,7 +304,8 @@ describe('TemplateCompiler', () => {
         label: 'Test 2',
         name: 'test2',
         type: 'text',
-      },{
+      },
+      {
         label: 'Test 3',
         name: 'test3',
         type: 'text',
@@ -348,7 +334,7 @@ describe('TemplateCompiler', () => {
     expect(result).to.eq(expected);
   });
 
-  it('conditional token with empty matchValue should not render', () => {
+  it('conditional token with empty shown should not render', () => {
     const template = ['{type}: {description}', '', '{conditional_field}'];
     const tokens: Token[] = [
       {
@@ -366,7 +352,7 @@ describe('TemplateCompiler', () => {
         name: 'conditional_field',
         type: 'text',
         linkedToken: 'type',
-        matchValue: '',
+        shown: '',
       },
     ];
     const tokenValues = {
@@ -384,7 +370,7 @@ describe('TemplateCompiler', () => {
     expect(result).to.eq(expected);
   });
 
-  it('conditional token with undefined matchValue should not render', () => {
+  it('conditional token with undefined shown should not render', () => {
     const template = ['{type}: {description}', '', '{conditional_field}'];
     const tokens: Token[] = [
       {
@@ -402,7 +388,7 @@ describe('TemplateCompiler', () => {
         name: 'conditional_field',
         type: 'text',
         linkedToken: 'type',
-        // matchValue is undefined
+        // shown is undefined
       },
     ];
     const tokenValues = {
@@ -451,7 +437,7 @@ describe('TemplateCompiler', () => {
         name: 'conditional_field',
         type: 'text',
         linkedToken: ['issue', 'type'],
-        matchValue: "issue =~ /客户反馈/ && type == 'fix'",
+        shown: "issue =~ /客户反馈/ && type == 'fix'",
       },
     ];
     const tokenValues = {
@@ -503,11 +489,11 @@ describe('TemplateCompiler', () => {
         name: 'conditional_field',
         type: 'text',
         linkedToken: ['issue', 'type'],
-        matchValue: "issue =~ /客户反馈/ && type == 'fix'",
+        shown: "issue =~ /客户反馈/ && type == 'fix'",
       },
     ];
     const tokenValues = {
-      type: 'feat',  // condition fails because type is 'feat', not 'fix'
+      type: 'feat', // condition fails because type is 'feat', not 'fix'
       issue: '客户反馈',
       description: 'test description',
       conditional_field: 'This should NOT appear',

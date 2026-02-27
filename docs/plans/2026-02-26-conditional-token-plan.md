@@ -2,9 +2,9 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Implement conditional token evaluation using linkedToken as a token name string and matchValue as either a literal or VSCode When Clause-style expression.
+**Goal:** Implement conditional token evaluation using linkedToken as a token name string and shown as either a literal or VSCode When Clause-style expression.
 
-**Architecture:** Add a shared expression evaluator utility in the frontend and route both FormBuilder and TemplateCompiler through it. Update the token editor to store linkedToken as a string and allow matchValue to be a freeform expression.
+**Architecture:** Add a shared expression evaluator utility in the frontend and route both FormBuilder and TemplateCompiler through it. Update the token editor to store linkedToken as a string and allow shown to be a freeform expression.
 
 **Tech Stack:** TypeScript, Lit, Web Test Runner (WTR)
 
@@ -13,6 +13,7 @@
 ### Task 1: Update token model and editor to use linkedToken string
 
 **Files:**
+
 - Modify: `frontend/src/global.d.ts`
 - Modify: `frontend/src/components/cme-token-item-edit/cme-token-item-edit.ts`
 - Test: `frontend/src/test/components/cme-token-item-edit/cme-token-item-edit.test.ts`
@@ -25,7 +26,7 @@ Update the conditional token test to expect linkedToken as a string name.
 expect(ev.detail.data).to.deep.include({
   isConditionalToken: true,
   linkedToken: 'issueType',
-  matchValue: 'bug'
+  shown: 'bug',
 });
 ```
 
@@ -61,34 +62,41 @@ git commit -m "refactor: 调整条件 token 关联字段"
 ### Task 2: Add When Clause evaluator utility and tests
 
 **Files:**
+
 - Create: `frontend/src/utils/evaluateWhenClause.ts`
 - Test: `frontend/src/test/utils/evaluateWhenClause.test.ts`
 
 **Step 1: Write failing evaluator tests**
 
 ```ts
-import {expect} from '@esm-bundle/chai';
+import { expect } from '@esm-bundle/chai';
 import evaluateWhenClause from '../../utils/evaluateWhenClause';
 
 describe('evaluateWhenClause', () => {
   it('supports literal match fallback', () => {
-    expect(evaluateWhenClause('bug', {value: 'bug'})).to.equal(true);
+    expect(evaluateWhenClause('bug', { value: 'bug' })).to.equal(true);
   });
 
   it('supports comparisons and logic', () => {
-    expect(evaluateWhenClause("value == 'bug' && value != 'task'", {value: 'bug'})).to.equal(true);
+    expect(
+      evaluateWhenClause("value == 'bug' && value != 'task'", { value: 'bug' })
+    ).to.equal(true);
   });
 
   it('supports in operator', () => {
-    expect(evaluateWhenClause("value in ['bug','task']", {value: 'task'})).to.equal(true);
+    expect(
+      evaluateWhenClause("value in ['bug','task']", { value: 'task' })
+    ).to.equal(true);
   });
 
   it('supports regex', () => {
-    expect(evaluateWhenClause('value =~ /fix/i', {value: 'HotFix'})).to.equal(true);
+    expect(evaluateWhenClause('value =~ /fix/i', { value: 'HotFix' })).to.equal(
+      true
+    );
   });
 
   it('returns false on invalid expression', () => {
-    expect(evaluateWhenClause('value ==', {value: 'bug'})).to.equal(false);
+    expect(evaluateWhenClause('value ==', { value: 'bug' })).to.equal(false);
   });
 });
 ```
@@ -102,6 +110,7 @@ Expected: FAIL because evaluator is missing.
 **Step 3: Implement evaluator**
 
 Create `frontend/src/utils/evaluateWhenClause.ts` with:
+
 - Literal fallback: if expression has no operators or whitespace, treat as `value == expr`.
 - Tokenizer and parser for the supported subset: `&&`, `||`, `!`, comparison operators, `in`, `=~`, parentheses, literals, arrays, regex.
 - Return `false` on parse or evaluation errors.
@@ -124,6 +133,7 @@ git commit -m "feat: 添加条件表达式解析器"
 ### Task 3: Wire evaluator into FormBuilder and TemplateCompiler
 
 **Files:**
+
 - Modify: `frontend/src/components/cme-form-view/FormBuilder.ts`
 - Modify: `frontend/src/components/cme-form-view/TemplateCompiler.ts`
 - Test: `frontend/src/test/components/cme-form-view/TemplateCompiler.test.ts`
@@ -134,7 +144,7 @@ git commit -m "feat: 添加条件表达式解析器"
 Update tests to use `linkedToken: 'issueType'` and add an expression case:
 
 ```ts
-{ isConditionalToken: true, linkedToken: 'issueType', matchValue: "value == 'bug'" }
+{ isConditionalToken: true, linkedToken: 'issueType', shown: "value == 'bug'" }
 ```
 
 **Step 2: Run tests to verify they fail**
@@ -172,16 +182,17 @@ git commit -m "feat: 条件 token 支持表达式判断"
 ### Task 4: Update token editor UI for expression input
 
 **Files:**
+
 - Modify: `frontend/src/components/cme-token-item-edit/cme-token-item-edit.ts`
 - Test: `frontend/src/test/components/cme-token-item-edit/cme-token-item-edit.test.ts`
 
 **Step 1: Write failing UI test**
 
-Ensure the matchValue control is a text input even when linked token is enum/boolean.
+Ensure the shown control is a text input even when linked token is enum/boolean.
 
 ```ts
-const matchValueInput = el.shadowRoot?.getElementById('matchValue');
-expect(matchValueInput?.tagName.toLowerCase()).to.eq('vscode-inputbox');
+const shownInput = el.shadowRoot?.getElementById('shown');
+expect(shownInput?.tagName.toLowerCase()).to.eq('vscode-inputbox');
 ```
 
 **Step 2: Run test to verify it fails**
@@ -190,7 +201,7 @@ Run (from `frontend/`): `npm run build:ts && npx wtr dist/test/components/cme-to
 
 Expected: FAIL because enum/boolean uses selects.
 
-**Step 3: Simplify matchValue UI and add helper text**
+**Step 3: Simplify shown UI and add helper text**
 
 - Replace enum/boolean selects with a single text input.
 - Add a short helper text with example expressions.
@@ -213,6 +224,7 @@ git commit -m "feat: 条件 token 支持表达式输入"
 ### Task 5: Documentation update
 
 **Files:**
+
 - Modify: `README.md`
 
 **Step 1: Add conditional token examples**

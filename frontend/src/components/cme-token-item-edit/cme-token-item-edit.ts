@@ -1,6 +1,3 @@
-import {css, CSSResult, html, LitElement, nothing, TemplateResult} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
-import {classMap} from 'lit/directives/class-map.js';
 import '@bendera/vscode-webview-elements/dist/vscode-checkbox';
 import '@bendera/vscode-webview-elements/dist/vscode-form-container';
 import '@bendera/vscode-webview-elements/dist/vscode-form-group';
@@ -10,6 +7,9 @@ import '@bendera/vscode-webview-elements/dist/vscode-label';
 import '@bendera/vscode-webview-elements/dist/vscode-multi-select';
 import '@bendera/vscode-webview-elements/dist/vscode-option';
 import '@bendera/vscode-webview-elements/dist/vscode-single-select';
+import {css, CSSResult, html, LitElement, nothing, TemplateResult} from 'lit';
+import {customElement, property, state} from 'lit/decorators.js';
+import {classMap} from 'lit/directives/class-map.js';
 import './cme-token-options-edit';
 
 const isUndefined = (val: unknown): boolean => {
@@ -41,7 +41,7 @@ export class TokenItemEdit extends LitElement {
       lines,
       value,
       linkedToken,
-      matchValue
+      shown,
     } = val;
 
     this._label = label ?? 'Untitled';
@@ -64,7 +64,7 @@ export class TokenItemEdit extends LitElement {
     this._lines = !isUndefined(lines) ? String(lines) : '';
     this._value = value ?? '';
     this._linkedToken = linkedToken;
-    this._matchValue = matchValue ?? '';
+    this._shown = shown ?? '';
   }
 
   get token(): Token {
@@ -130,9 +130,12 @@ export class TokenItemEdit extends LitElement {
       retval.options = this._options;
     }
 
-    if (this._linkedToken && (Array.isArray(this._linkedToken) ? this._linkedToken.length > 0 : true)) {
+    if (
+      this._linkedToken &&
+      (Array.isArray(this._linkedToken) ? this._linkedToken.length > 0 : true)
+    ) {
       retval.linkedToken = this._linkedToken;
-      retval.matchValue = this._matchValue;
+      retval.shown = this._shown;
     }
 
     return retval;
@@ -141,7 +144,7 @@ export class TokenItemEdit extends LitElement {
   @property({type: Boolean})
   active = false;
 
-  @property({ type: Array })
+  @property({type: Array})
   tokens: Token[] = [];
 
   @state()
@@ -199,7 +202,7 @@ export class TokenItemEdit extends LitElement {
   private _linkedToken?: string | string[];
 
   @state()
-  private _matchValue = '';
+  private _shown = '';
 
   @state()
   private _isOptionsWindowVisible = false;
@@ -286,11 +289,11 @@ export class TokenItemEdit extends LitElement {
     const val = ev.detail.value as string | string[];
 
     this._linkedToken = val;
-    this._matchValue = '';
+    this._shown = '';
   }
 
-  private _onMatchValueChange(ev: CustomEvent) {
-    this._matchValue = ev.detail;
+  private _onShownChange(ev: CustomEvent) {
+    this._shown = ev.detail;
   }
 
   private _onEditClick() {
@@ -681,7 +684,10 @@ export class TokenItemEdit extends LitElement {
     `;
 
     const linkedTokenWidget = html`
-      <vscode-form-group variant="horizontal" class="${classMap({ disabled: !this.tokenOptions?.length })}">
+      <vscode-form-group
+        variant="horizontal"
+        class="${classMap({disabled: !this.tokenOptions?.length})}"
+      >
         <vscode-label for="linkedToken">Linked Token</vscode-label>
         <vscode-multi-select
           id="linkedToken"
@@ -689,7 +695,7 @@ export class TokenItemEdit extends LitElement {
           combobox
           @vsc-change="${this._onLinkedTokenChange}"
         >
-          ${this.tokenOptions.map(token => {
+          ${this.tokenOptions.map((token) => {
             const isSelected = Array.isArray(this._linkedToken)
               ? this._linkedToken.includes(token.name)
               : this._linkedToken === token.name;
@@ -703,24 +709,25 @@ export class TokenItemEdit extends LitElement {
       </vscode-form-group>
     `;
 
-    const matchValueTextWidget = html`
+    const shownTextWidget = html`
       <vscode-form-group>
-        <vscode-label for="matchValue">Match Value / Expression</vscode-label>
+        <vscode-label for="shown">Match Value / Expression</vscode-label>
         <vscode-inputbox
-          value="${this._matchValue}"
-          id="matchValue"
-          name="matchValue"
-          @vsc-input="${this._onMatchValueChange}"
+          value="${this._shown}"
+          id="shown"
+          name="shown"
+          @vsc-input="${this._onShownChange}"
         ></vscode-inputbox>
         <p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.8;">
-          Examples: <code>type == 'feat'</code>, <code>issue =~ /some key/</code>, <code>type in ['fix', 'hotfix']</code>, <code>issue =~ /some key/ && type == 'fix'</code>
+          Examples: <code>type == 'feat'</code>,
+          <code>issue =~ /some key/</code>,
+          <code>type in ['fix', 'hotfix']</code>,
+          <code>issue =~ /some key/ && type == 'fix'</code>
         </p>
       </vscode-form-group>
     `;
 
-    const _matchValueWidget = !this._linkedToken
-      ? nothing
-      : matchValueTextWidget;
+    const _shownWidget = !this._linkedToken ? nothing : shownTextWidget;
 
     const activeView = html`
       <div>
@@ -728,10 +735,9 @@ export class TokenItemEdit extends LitElement {
           ${nameWidget} ${labelWidget} ${valueWidget} ${typeWidget}
           ${descriptionWidget} ${prefixWidget} ${suffixWidget}
           ${multilineWidget} ${monospaceWidget} ${linesWidget} ${maxLinesWidget}
-          ${maxLengthWidget} ${maxLineLengthWidget} ${multipleWidget} ${separatorWidget}
-          ${comboboxWidget} ${optionsWidget}
-          ${linkedTokenWidget}
-          ${_matchValueWidget}
+          ${maxLengthWidget} ${maxLineLengthWidget} ${multipleWidget}
+          ${separatorWidget} ${comboboxWidget} ${optionsWidget}
+          ${linkedTokenWidget} ${_shownWidget}
           ${this._isOptionsWindowVisible ? optionsWindow : nothing}
           <vscode-form-group>
             <vscode-button @click="${this._onSaveClick}">Save</vscode-button>

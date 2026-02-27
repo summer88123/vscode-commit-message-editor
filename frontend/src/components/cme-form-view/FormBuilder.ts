@@ -1,5 +1,3 @@
-import {html, TemplateResult, nothing} from 'lit';
-import {ifDefined} from 'lit/directives/if-defined.js';
 import '@bendera/vscode-webview-elements/dist/vscode-checkbox';
 import '@bendera/vscode-webview-elements/dist/vscode-form-group';
 import '@bendera/vscode-webview-elements/dist/vscode-form-helper';
@@ -8,9 +6,11 @@ import '@bendera/vscode-webview-elements/dist/vscode-label';
 import '@bendera/vscode-webview-elements/dist/vscode-multi-select';
 import '@bendera/vscode-webview-elements/dist/vscode-option';
 import '@bendera/vscode-webview-elements/dist/vscode-single-select';
-import noop from '../../utils/noop';
-import evaluateWhenClause from '../../utils/evaluateWhenClause';
+import {html, nothing, TemplateResult} from 'lit';
+import {ifDefined} from 'lit/directives/if-defined.js';
 import type {DynamicEnumsState} from '../../store/store';
+import evaluateWhenClause from '../../utils/evaluateWhenClause';
+import noop from '../../utils/noop';
 
 class FormBuilder {
   set tokens(val: Token[]) {
@@ -21,11 +21,11 @@ class FormBuilder {
     return this._tokens;
   }
 
-  set tokenValues(val: { [name: string]: string | string[] }) {
+  set tokenValues(val: {[name: string]: string | string[]}) {
     this._tokenValues = val;
   }
 
-  get tokenValues(): { [name: string]: string | string[] } {
+  get tokenValues(): {[name: string]: string | string[]} {
     return this._tokenValues;
   }
 
@@ -44,20 +44,22 @@ class FormBuilder {
   build(): TemplateResult[] {
     const formElements = this._tokens.map((token) => {
       if (token.linkedToken) {
-        // matchValue 为空时，token 不显示
-        if (!token.matchValue) {
+        // shown 为空时，token 不显示
+        if (!token.shown) {
           return html`${nothing}`;
         }
-        
+
         // 构建上下文：收集所有 linkedToken 的值
         const context: Record<string, string | string[]> = {};
-        const tokens = Array.isArray(token.linkedToken) ? token.linkedToken : [token.linkedToken];
-        
-        tokens.forEach(tokenName => {
+        const tokens = Array.isArray(token.linkedToken)
+          ? token.linkedToken
+          : [token.linkedToken];
+
+        tokens.forEach((tokenName) => {
           context[tokenName] = this.tokenValues?.[tokenName] || '';
         });
-        
-        if (!evaluateWhenClause(token.matchValue, context)) {
+
+        if (!evaluateWhenClause(token.shown, context)) {
           return html`${nothing}`;
         }
       }
@@ -80,7 +82,7 @@ class FormBuilder {
 
   private _tokens: Token[] = [];
 
-  private _tokenValues: { [name: string]: string | string[] } = {};
+  private _tokenValues: {[name: string]: string | string[]} = {};
 
   private _dynamicEnums: DynamicEnumsState = {};
 
@@ -163,7 +165,9 @@ class FormBuilder {
     if (dynamicState?.error) {
       const errorWidget = html`
         <div>
-          <div style="color: var(--vscode-errorForeground); margin-bottom: 8px;">
+          <div
+            style="color: var(--vscode-errorForeground); margin-bottom: 8px;"
+          >
             ${dynamicState.error}
           </div>
           <vscode-inputbox

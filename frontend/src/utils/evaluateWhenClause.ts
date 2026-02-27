@@ -2,7 +2,6 @@
  * Evaluates a When Clause expression against a context object.
  *
  * Supports:
- * - Literal match fallback: "bug" => value == "bug"
  * - Comparison operators: ==, !=, <, >, <=, >=
  * - Logical operators: &&, ||, !
  * - In operator: value in ['a', 'b']

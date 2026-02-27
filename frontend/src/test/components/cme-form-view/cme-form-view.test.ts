@@ -1,6 +1,10 @@
+import {VscodeCheckbox} from '@bendera/vscode-webview-elements/dist/vscode-checkbox';
+import {VscodeInputbox} from '@bendera/vscode-webview-elements/dist/vscode-inputbox';
+import {VscodeMultiSelect} from '@bendera/vscode-webview-elements/dist/vscode-multi-select';
+import {VscodeSingleSelect} from '@bendera/vscode-webview-elements/dist/vscode-single-select';
 import {expect, fixture, html} from '@open-wc/testing';
+import sinon, {SinonSpy} from 'sinon';
 import {FormView} from '../../../components/cme-form-view/cme-form-view';
-import store from '../../../store/store';
 import {
   closeTab,
   confirmAmend,
@@ -8,11 +12,7 @@ import {
   receiveConfig,
   updateTokenValues,
 } from '../../../store/actions';
-import sinon, {SinonSpy} from 'sinon';
-import {VscodeSingleSelect} from '@bendera/vscode-webview-elements/dist/vscode-single-select';
-import {VscodeMultiSelect} from '@bendera/vscode-webview-elements/dist/vscode-multi-select';
-import {VscodeInputbox} from '@bendera/vscode-webview-elements/dist/vscode-inputbox';
-import {VscodeCheckbox} from '@bendera/vscode-webview-elements/dist/vscode-checkbox';
+import store from '../../../store/store';
 
 const createConfig = (): ExtensionConfig => {
   const issueTypeToken: Token = {
@@ -26,7 +26,7 @@ const createConfig = (): ExtensionConfig => {
       {
         label: 'bug',
       },
-    ]
+    ],
   };
   return {
     confirmAmend: true,
@@ -145,7 +145,7 @@ const createConfig = (): ExtensionConfig => {
         prefix: 'Root cause: ',
         type: 'text',
         linkedToken: 'issue_type',
-        matchValue: "issue_type == 'bug'",
+        shown: "issue_type == 'bug'",
       },
       {
         label: 'Fix',
@@ -153,7 +153,7 @@ const createConfig = (): ExtensionConfig => {
         prefix: 'Fix: ',
         type: 'text',
         linkedToken: 'issue_type',
-        matchValue: "issue_type == 'bug'",
+        shown: "issue_type == 'bug'",
       },
     ],
     reduceEmptyLines: true,
@@ -209,7 +209,7 @@ describe('cme-form-view', () => {
         body: 'body test',
         breaking_change: 'BREAKING CHANGE: ',
         footer: 'footer test',
-        issue_type: 'feature'
+        issue_type: 'feature',
       })
     );
 
@@ -253,8 +253,8 @@ describe('cme-form-view', () => {
         breaking_change: 'BREAKING CHANGE: ',
         footer: 'footer test',
         issue_type: 'bug',
-        root_cause: 'I\'m an idiot',
-        fix: 'Increased intelluct'
+        root_cause: "I'm an idiot",
+        fix: 'Increased intelluct',
       })
     );
 
@@ -270,7 +270,7 @@ describe('cme-form-view', () => {
     message += '\n';
     message += 'body test\n';
     message += '\n';
-    message += 'Root cause: I\'m an idiot\n';
+    message += "Root cause: I'm an idiot\n";
     message += '\n';
     message += 'Fix: Increased intelluct\n';
     message += '\n';
@@ -302,7 +302,7 @@ describe('cme-form-view', () => {
         body: 'body test',
         breaking_change: 'BREAKING CHANGE: ',
         footer: 'footer test',
-        issue_type: 'feature'
+        issue_type: 'feature',
       })
     );
 
@@ -448,7 +448,7 @@ describe('cme-form-view', () => {
         type: 'chore',
         issue_type: 'feature',
         root_cause: '',
-        fix: ''
+        fix: '',
       })
     );
     expect(calls[1].firstArg).to.deep.equal(
@@ -462,7 +462,7 @@ describe('cme-form-view', () => {
         type: 'chore',
         issue_type: 'feature',
         root_cause: '',
-        fix: ''
+        fix: '',
       })
     );
     expect(calls[2].firstArg).to.deep.equal(
@@ -476,7 +476,7 @@ describe('cme-form-view', () => {
         type: 'chore',
         issue_type: 'feature',
         root_cause: '',
-        fix: ''
+        fix: '',
       })
     );
     expect(calls[3].firstArg).to.deep.equal(
@@ -490,7 +490,7 @@ describe('cme-form-view', () => {
         type: 'chore',
         issue_type: 'feature',
         root_cause: '',
-        fix: ''
+        fix: '',
       })
     );
     expect(calls[4].firstArg).to.deep.equal(
@@ -504,7 +504,7 @@ describe('cme-form-view', () => {
         type: 'chore',
         issue_type: 'bug',
         root_cause: '',
-        fix: ''
+        fix: '',
       })
     );
     expect(calls[5].firstArg).to.deep.equal(
@@ -518,7 +518,7 @@ describe('cme-form-view', () => {
         type: 'chore',
         issue_type: 'bug',
         root_cause: 'No idea man',
-        fix: ''
+        fix: '',
       })
     );
     expect(calls[6].firstArg).to.deep.equal(
@@ -553,12 +553,15 @@ describe('cme-form-view', () => {
         body: 'body test',
         breaking_change: 'BREAKING CHANGE: ',
         footer: 'footer test',
-        issue_type: 'feature'
+        issue_type: 'feature',
       })
     );
 
-    expect(el.shadowRoot?.querySelector('vscode-multi-select[name="root_cause"]')).to.be.null;
-    expect(el.shadowRoot?.querySelector('vscode-multi-select[name="fix"]')).to.be.null;
+    expect(
+      el.shadowRoot?.querySelector('vscode-multi-select[name="root_cause"]')
+    ).to.be.null;
+    expect(el.shadowRoot?.querySelector('vscode-multi-select[name="fix"]')).to
+      .be.null;
   });
 
   it('should display conditionally rendered fields if the condition is met', async () => {
@@ -576,11 +579,14 @@ describe('cme-form-view', () => {
         body: 'body test',
         breaking_change: 'BREAKING CHANGE: ',
         footer: 'footer test',
-        issue_type: 'bug'
+        issue_type: 'bug',
       })
     );
 
-    expect(el.shadowRoot?.querySelector('vscode-multi-select[name="root_cause"]')).not.to.be.undefined;
-    expect(el.shadowRoot?.querySelector('vscode-multi-select[name="fix"]')).not.to.be.undefined;
+    expect(
+      el.shadowRoot?.querySelector('vscode-multi-select[name="root_cause"]')
+    ).not.to.be.undefined;
+    expect(el.shadowRoot?.querySelector('vscode-multi-select[name="fix"]')).not
+      .to.be.undefined;
   });
 });

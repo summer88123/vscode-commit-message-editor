@@ -52,30 +52,30 @@
 
 token 对象数组。它定义了表单字段。下表显示了 token 对象的结构：
 
-| 名称                       | 类型    | 描述                                                                                                                                                            | 适用范围 |
-| -------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| label                      | string  | 表单项的标签。                                                                                                                                                    | 所有       |
-| name                       | string  | 模板中的 token 名称。                                                                                                                                             | 所有       |
-| value                      | string  | 布尔 token 为 true 时的值                                                                                                                                         | boolean   |
-| type                       | enum    | token 的类型。有效值为：<br> **text**: 显示为文本输入<br>**boolean**: 显示为复选框<br>**enum**: 显示为下拉选择器<br>**dynamic-enum**: 显示为从提供者加载选项的下拉选择器 | 所有       |
-| description                | string  | 表单项下方的较长文本                                                                                                                                              | 所有       |
-| prefix                     | string  | 值之前的文本。仅在值不为空时应用                                                                                                                                  | 所有       |
-| suffix                     | string  | 值之后的文本。仅在值不为空时应用                                                                                                                                  | 所有       |
-| multiline                  | boolean | 多行文本输入                                                                                                                                                      | text      |
-| monospace                  | boolean | 在多行模式下使用等宽编辑器                                                                                                                                        | text      |
-| lines                      | number  | 文本区域初始高度（行数）                                                                                                                                          | text      |
-| maxLines                   | number  | 文本区域最大高度（行数）                                                                                                                                          | text      |
-| maxLength                  | number  | 值的最大长度                                                                                                                                                      | text      |
-| maxLineLength              | number  | 使用等宽编辑器时垂直标尺的位置                                                                                                                                    | text      |
-| multiple                   | boolean | 多个选项                                                                                                                                                          | enum      |
-| separator                  | string  | 选择多个选项时的分隔符                                                                                                                                            | enum      |
-| combobox                   | boolean | 选择器是否可过滤                                                                                                                                                  | enum, dynamic-enum      |
-| options                    | array   | 可用选项                                                                                                                                                          | enum      |
-| options[_{n}_].label       | string  | 选项的值                                                                                                                                                          | enum      |
-| options[_{n}_].description | string  | 选项的详细描述                                                                                                                                                    | enum      |
-| provider                   | string  | 动态选项提供者的 ID（dynamic-enum 必需）                                                                                                                          | dynamic-enum |
-| linkedToken                | string  | 关联 token 的名称。设置此字段后，该 token 成为条件 token                                                                                                           | 所有       |
-| matchValue                 | string  | 条件表达式或字面值，用于确定此 token 何时可见。支持 When Clause 风格的表达式                                                                                     | 所有       |
+| 名称                       | 类型    | 描述                                                                                                                                                                     | 适用范围           |
+| -------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------ |
+| label                      | string  | 表单项的标签。                                                                                                                                                           | 所有               |
+| name                       | string  | 模板中的 token 名称。                                                                                                                                                    | 所有               |
+| value                      | string  | 布尔 token 为 true 时的值                                                                                                                                                | boolean            |
+| type                       | enum    | token 的类型。有效值为：<br> **text**: 显示为文本输入<br>**boolean**: 显示为复选框<br>**enum**: 显示为下拉选择器<br>**dynamic-enum**: 显示为从提供者加载选项的下拉选择器 | 所有               |
+| description                | string  | 表单项下方的较长文本                                                                                                                                                     | 所有               |
+| prefix                     | string  | 值之前的文本。仅在值不为空时应用                                                                                                                                         | 所有               |
+| suffix                     | string  | 值之后的文本。仅在值不为空时应用                                                                                                                                         | 所有               |
+| multiline                  | boolean | 多行文本输入                                                                                                                                                             | text               |
+| monospace                  | boolean | 在多行模式下使用等宽编辑器                                                                                                                                               | text               |
+| lines                      | number  | 文本区域初始高度（行数）                                                                                                                                                 | text               |
+| maxLines                   | number  | 文本区域最大高度（行数）                                                                                                                                                 | text               |
+| maxLength                  | number  | 值的最大长度                                                                                                                                                             | text               |
+| maxLineLength              | number  | 使用等宽编辑器时垂直标尺的位置                                                                                                                                           | text               |
+| multiple                   | boolean | 多个选项                                                                                                                                                                 | enum               |
+| separator                  | string  | 选择多个选项时的分隔符                                                                                                                                                   | enum               |
+| combobox                   | boolean | 选择器是否可过滤                                                                                                                                                         | enum, dynamic-enum |
+| options                    | array   | 可用选项                                                                                                                                                                 | enum               |
+| options[_{n}_].label       | string  | 选项的值                                                                                                                                                                 | enum               |
+| options[_{n}_].description | string  | 选项的详细描述                                                                                                                                                           | enum               |
+| provider                   | string  | 动态选项提供者的 ID（dynamic-enum 必需）                                                                                                                                 | dynamic-enum       |
+| linkedToken                | string  | 关联 token 的名称。设置此字段后，该 token 成为条件 token                                                                                                                 | 所有               |
+| shown                      | string  | 条件表达式，用于确定此 token 何时可见。支持 When Clause 风格的表达式                                                                                             | 所有               |
 
 ### 条件 Token
 
@@ -86,52 +86,50 @@ token 对象数组。它定义了表单字段。下表显示了 token 对象的�
 要创建条件 token，需要设置以下属性：
 
 - `linkedToken: "token_name"` - 指定关联的 token 名称
-- `matchValue: "expression"` - 定义条件表达式
+- `shown: "expression"` - 定义条件表达式
 
-**注意：** 如果 `linkedToken` 存在但 `matchValue` 为空或未定义，该 token 将不会显示（条件视为不匹配）。
+**注意：** 如果 `linkedToken` 存在但 `shown` 为空或未定义，该 token 将不会显示（条件视为不匹配）。
 
-#### matchValue 表达式语法
+#### shown 表达式语法
 
-`matchValue` 支持以下格式：
+**比较表达式**
 
-**1. 字面值匹配**（向后兼容）
 ```json
 {
-  "matchValue": "bug"
+  "shown": "value == 'feat'"
 }
 ```
-当关联 token 的值精确等于 `"bug"` 时，此条件 token 可见。
 
-**2. 比较表达式**
-```json
-{
-  "matchValue": "value == 'feat'"
-}
-```
 支持的比较操作符：`==`、`!=`、`<`、`>`、`<=`、`>=`
 
 **3. 逻辑表达式**
+
 ```json
 {
-  "matchValue": "value == 'fix' || value == 'hotfix'"
+  "shown": "value == 'fix' || value == 'hotfix'"
 }
 ```
+
 支持的逻辑操作符：`&&`（与）、`||`（或）、`!`（非）
 
 **4. `in` 操作符**
+
 ```json
 {
-  "matchValue": "value in ['fix', 'hotfix', 'bug']"
+  "shown": "value in ['fix', 'hotfix', 'bug']"
 }
 ```
+
 检查关联 token 的值是否在给定数组中。
 
 **5. 正则表达式匹配**
+
 ```json
 {
-  "matchValue": "value =~ /^(fix|feat)/"
+  "shown": "value =~ /^(fix|feat)/"
 }
 ```
+
 使用正则表达式匹配关联 token 的值。
 
 #### 示例配置
@@ -155,7 +153,7 @@ token 对象数组。它定义了表单字段。下表显示了 token 对象的�
       "type": "text",
       "multiline": true,
       "linkedToken": "type",
-      "matchValue": "value == 'feat' || value == 'fix'"
+      "shown": "value == 'feat' || value == 'fix'"
     },
     {
       "label": "问题编号",
@@ -163,13 +161,14 @@ token 对象数组。它定义了表单字段。下表显示了 token 对象的�
       "type": "text",
       "prefix": "Closes #",
       "linkedToken": "type",
-      "matchValue": "value in ['fix', 'hotfix']"
+      "shown": "value in ['fix', 'hotfix']"
     }
   ]
 }
 ```
 
 在此示例中：
+
 - `breaking` 字段仅在 `type` 为 `feat` 或 `fix` 时显示
 - `issue` 字段仅在 `type` 为 `fix` 或 `hotfix` 时显示
 
@@ -194,10 +193,10 @@ export function activate(context: vscode.ExtensionContext) {
   const cmeExtension = vscode.extensions.getExtension(
     'adam-bender.commit-message-editor'
   );
-  
+
   if (cmeExtension) {
     const cmeAPI = cmeExtension.exports;
-    
+
     const disposable = cmeAPI.registerDynamicOptionsProvider({
       id: 'my-provider',
       displayName: 'My Provider',
@@ -205,11 +204,11 @@ export function activate(context: vscode.ExtensionContext) {
         // 从数据源获取选项
         return [
           { value: 'option1', label: 'Option 1', description: 'First option' },
-          { value: 'option2', label: 'Option 2', description: 'Second option' }
+          { value: 'option2', label: 'Option 2', description: 'Second option' },
         ];
-      }
+      },
     });
-    
+
     context.subscriptions.push(disposable);
   }
 }
@@ -218,11 +217,13 @@ export function activate(context: vscode.ExtensionContext) {
 #### 文档
 
 完整的文档、示例和最佳实践，请参阅：
+
 - [动态枚举提供者 API 指南](docs/dynamic-enum-provider.md)
 
 #### 示例提供者
 
 文档包含以下完整实现示例：
+
 - **Jira Provider**: 从当前 sprint 获取问题
 - **Git Branch Provider**: 从分支名称中提取问题编号
 - **File System Provider**: 从项目结构中列出组件
@@ -236,4 +237,3 @@ export function activate(context: vscode.ExtensionContext) {
 - [动态枚举 - Git 分支信息](example-configs/dynamic-enum-git-example.json)
 
 你可以使用 `scripts/gitmoji-config.js` 脚本自定义 Gitmoji 配置
-

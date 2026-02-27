@@ -65,7 +65,7 @@ declare global {
     type: TokenType;
     value?: string;
     options?: EnumTokenOption[];
-    provider?: string;  // 用于 dynamic-enum 类型
+    provider?: string; // 用于 dynamic-enum 类型
     description?: string;
     multiline?: boolean;
     monospace?: boolean;
@@ -80,7 +80,7 @@ declare global {
     prefix?: string;
     suffix?: string;
     linkedToken?: string | string[];
-    matchValue?: string;
+    shown?: string;
   }
 
   type DefaultViewConfig = 'text' | 'form';
