@@ -18,7 +18,6 @@ import {triggerInputboxRerender} from '../helpers';
 import '../cme-repo-selector';
 import FormBuilder from './FormBuilder';
 import TemplateCompiler from './TemplateCompiler';
-import evaluateWhenClause from '../../utils/evaluateWhenClause';
 import {CodeEditor} from '../cme-code-editor/cme-code-editor';
 import {RepoSelector} from '../cme-repo-selector';
 import {getAPI} from '../../utils/VSCodeAPIService';
@@ -112,18 +111,17 @@ export class FormView extends connect(store)(LitElement) {
 
     this._tokens.forEach((t) => {
       const {name, type, separator = ''} = t;
-      const rawValue = formData[name];
+      const rawValue = formData[name] ?? '';
 
       switch (type) {
         case 'enum':
         case 'dynamic-enum':
           payload[name] = Array.isArray(rawValue)
             ? rawValue.join(separator)
-            : (rawValue || '');
+            : rawValue;
           break;
         case 'text':
-          // Handle 'undefined' string from conditional tokens
-          payload[name] = (rawValue && rawValue !== 'undefined') ? String(rawValue) : '';
+          payload[name] = String(rawValue);
           break;
         case 'boolean':
           if (Array.isArray(rawValue) && rawValue[0]) {
@@ -133,22 +131,6 @@ export class FormView extends connect(store)(LitElement) {
           }
           break;
         default:
-      }
-    });
-    
-    // Post-process all conditional tokens after all values are collected
-    this._tokens.forEach((t) => {
-      if (t.isConditionalToken && t.linkedToken && t.matchValue) {
-        const {name} = t;
-        // Read linkedToken value from the new payload, not from old state
-        const linkedValue = payload[t.linkedToken];
-        const conditionMet = evaluateWhenClause(t.matchValue, { value: linkedValue });
-        
-        if (!conditionMet) {
-          // Condition not met: set to 'undefined'
-          payload[name] = 'undefined';
-        }
-        // If condition is met and value is '', keep it as ''
       }
     });
 
@@ -213,18 +195,18 @@ export class FormView extends connect(store)(LitElement) {
         if (this._dynamicOptionsLoaded.has(tokenName)) {
           return;
         }
-        
+
         // 检查是否已经有状态（正在加载或已加载）
         if (this._dynamicEnums[tokenName]) {
           return;
         }
-        
+
         // 标记为已触发加载
         this._dynamicOptionsLoaded.add(tokenName);
-        
+
         // 发起加载请求
         store.dispatch(loadDynamicOptionsStart({tokenName}));
-        
+
         vscode.postMessage({
           command: 'loadDynamicOptions',
           payload: {
