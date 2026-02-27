@@ -173,21 +173,11 @@ token 对象数组。它定义了表单字段。下表显示了 token 对象的�
 - `breaking` 字段仅在 `type` 为 `feat` 或 `fix` 时显示
 - `issue` 字段仅在 `type` 为 `fix` 或 `hotfix` 时显示
 
-### 示例配置
-
-- [默认配置](example-configs/default.json)
-- [Gitmojis](example-configs/gitmojis.json)
-- [Gitmojis - 简体中文描述](example-configs/gitmojis_zh-CN.json)
-- [动态枚举 - Jira 集成](example-configs/dynamic-enum-jira-example.json)
-- [动态枚举 - Git 分支信息](example-configs/dynamic-enum-git-example.json)
-
-你可以使用 `scripts/gitmoji-config.js` 脚本自定义 Gitmoji 配置
-
-## 动态枚举提供者 API
+### 动态枚举提供者 API
 
 从 0.19.0 版本开始，此扩展提供了一个 API，允许其他 VSCode 扩展注册**动态选项提供者**。这些提供者可以从外部源（API、Git 信息、文件系统等）动态获取枚举选项，而不是使用静态配置。
 
-### 使用场景
+#### 使用场景
 
 - 从项目管理系统获取 Jira/GitHub 问题
 - 从 Git 分支名称中提取问题编号
@@ -195,7 +185,7 @@ token 对象数组。它定义了表单字段。下表显示了 token 对象的�
 - 从组织目录加载用户列表
 - 任何其他动态数据源
 
-### 快速示例
+#### 快速示例
 
 ```typescript
 import * as vscode from 'vscode';
@@ -225,14 +215,25 @@ export function activate(context: vscode.ExtensionContext) {
 }
 ```
 
-### 文档
+#### 文档
 
 完整的文档、示例和最佳实践，请参阅：
 - [动态枚举提供者 API 指南](docs/dynamic-enum-provider.md)
 
-### 示例提供者
+#### 示例提供者
 
 文档包含以下完整实现示例：
 - **Jira Provider**: 从当前 sprint 获取问题
 - **Git Branch Provider**: 从分支名称中提取问题编号
 - **File System Provider**: 从项目结构中列出组件
+
+### 完整示例配置
+
+- [默认配置](example-configs/default.json)
+- [Gitmojis](example-configs/gitmojis.json)
+- [Gitmojis - 简体中文描述](example-configs/gitmojis_zh-CN.json)
+- [动态枚举 - Jira 集成](example-configs/dynamic-enum-jira-example.json)
+- [动态枚举 - Git 分支信息](example-configs/dynamic-enum-git-example.json)
+
+你可以使用 `scripts/gitmoji-config.js` 脚本自定义 Gitmoji 配置
+
