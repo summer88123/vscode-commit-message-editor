@@ -2,7 +2,7 @@
   "name": "hecom-commit-message-editor",
   "displayName": "Hecom Commit Message Editor",
   "description": "以便捷的方式编辑 Git 提交信息。",
-  "version": "0.26.0",
+  "version": "0.27.0",
   "license": "MIT",
   "preview": false,
   "publisher": "hecom",
