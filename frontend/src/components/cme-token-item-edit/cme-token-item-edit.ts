@@ -4,8 +4,6 @@ import '@bendera/vscode-webview-elements/dist/vscode-form-group';
 import '@bendera/vscode-webview-elements/dist/vscode-icon';
 import '@bendera/vscode-webview-elements/dist/vscode-inputbox';
 import '@bendera/vscode-webview-elements/dist/vscode-label';
-import '@bendera/vscode-webview-elements/dist/vscode-multi-select';
-import '@bendera/vscode-webview-elements/dist/vscode-option';
 import '@bendera/vscode-webview-elements/dist/vscode-single-select';
 import {css, CSSResult, html, LitElement, nothing, TemplateResult} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
@@ -40,7 +38,6 @@ export class TokenItemEdit extends LitElement {
       options,
       lines,
       value,
-      linkedToken,
       shown,
     } = val;
 
@@ -63,7 +60,6 @@ export class TokenItemEdit extends LitElement {
     this._options = options ?? [];
     this._lines = !isUndefined(lines) ? String(lines) : '';
     this._value = value ?? '';
-    this._linkedToken = linkedToken;
     this._shown = shown ?? '';
   }
 
@@ -130,11 +126,7 @@ export class TokenItemEdit extends LitElement {
       retval.options = this._options;
     }
 
-    if (
-      this._linkedToken &&
-      (Array.isArray(this._linkedToken) ? this._linkedToken.length > 0 : true)
-    ) {
-      retval.linkedToken = this._linkedToken;
+    if (this._shown.length > 0) {
       retval.shown = this._shown;
     }
 
@@ -143,9 +135,6 @@ export class TokenItemEdit extends LitElement {
 
   @property({type: Boolean})
   active = false;
-
-  @property({type: Array})
-  tokens: Token[] = [];
 
   @state()
   private _label = '';
@@ -199,17 +188,10 @@ export class TokenItemEdit extends LitElement {
   private _value = '';
 
   @state()
-  private _linkedToken?: string | string[];
-
-  @state()
   private _shown = '';
 
   @state()
   private _isOptionsWindowVisible = false;
-
-  get tokenOptions() {
-    return this.tokens?.filter((t) => t.name !== this._name) ?? [];
-  }
 
   private _onNameChange(ev: CustomEvent) {
     this._name = ev.detail;
@@ -283,13 +265,6 @@ export class TokenItemEdit extends LitElement {
 
   private _onOptionsSave(ev: CustomEvent<EnumTokenOption[]>) {
     this._options = ev.detail;
-  }
-
-  private _onLinkedTokenChange(ev: CustomEvent) {
-    const val = ev.detail.value as string | string[];
-
-    this._linkedToken = val;
-    this._shown = '';
   }
 
   private _onShownChange(ev: CustomEvent) {
@@ -683,32 +658,6 @@ export class TokenItemEdit extends LitElement {
       </div>
     `;
 
-    const linkedTokenWidget = html`
-      <vscode-form-group
-        variant="horizontal"
-        class="${classMap({disabled: !this.tokenOptions?.length})}"
-      >
-        <vscode-label for="linkedToken">Linked Token</vscode-label>
-        <vscode-multi-select
-          id="linkedToken"
-          name="linkedToken"
-          combobox
-          @vsc-change="${this._onLinkedTokenChange}"
-        >
-          ${this.tokenOptions.map((token) => {
-            const isSelected = Array.isArray(this._linkedToken)
-              ? this._linkedToken.includes(token.name)
-              : this._linkedToken === token.name;
-            return html`
-              <vscode-option ?selected="${isSelected}">
-                ${token.name}
-              </vscode-option>
-            `;
-          })}
-        </vscode-multi-select>
-      </vscode-form-group>
-    `;
-
     const shownTextWidget = html`
       <vscode-form-group>
         <vscode-label for="shown">Match Value / Expression</vscode-label>
@@ -727,8 +676,6 @@ export class TokenItemEdit extends LitElement {
       </vscode-form-group>
     `;
 
-    const _shownWidget = !this._linkedToken ? nothing : shownTextWidget;
-
     const activeView = html`
       <div>
         <vscode-form-container id="form" responsive>
@@ -737,7 +684,7 @@ export class TokenItemEdit extends LitElement {
           ${multilineWidget} ${monospaceWidget} ${linesWidget} ${maxLinesWidget}
           ${maxLengthWidget} ${maxLineLengthWidget} ${multipleWidget}
           ${separatorWidget} ${comboboxWidget} ${optionsWidget}
-          ${linkedTokenWidget} ${_shownWidget}
+          ${shownTextWidget}
           ${this._isOptionsWindowVisible ? optionsWindow : nothing}
           <vscode-form-group>
             <vscode-button @click="${this._onSaveClick}">Save</vscode-button>

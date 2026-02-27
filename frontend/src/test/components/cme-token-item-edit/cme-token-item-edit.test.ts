@@ -215,151 +215,73 @@ describe('cme-token-item-edit', () => {
     });
   });
 
-  describe('conditional tokens', () => {
-    it('should properly update conditional token related fields', async () => {
+  describe('shown field', () => {
+    it('should always render the shown input box', async () => {
       const el = (await fixture(
         html`<cme-token-item-edit></cme-token-item-edit>`
       )) as TokenItemEdit;
 
       el.active = true;
-      el.tokens = [
-        {
-          name: 'test token',
-          label: 'Test token',
-          type: 'text',
-        },
-      ];
-
       await el.updateComplete;
 
-      const linkedToken = el.shadowRoot?.getElementById('linkedToken');
+      expect(el.shadowRoot?.getElementById('shown')).to.exist;
+    });
 
-      linkedToken?.dispatchEvent(
-        new CustomEvent('vsc-change', {detail: {value: ['test token']}})
-      );
+    it('should properly update shown field', async () => {
+      const el = (await fixture(
+        html`<cme-token-item-edit></cme-token-item-edit>`
+      )) as TokenItemEdit;
 
+      el.active = true;
       await el.updateComplete;
+
       const shown = el.shadowRoot?.getElementById('shown');
-
       shown?.dispatchEvent(
-        new CustomEvent('vsc-input', {detail: 'test value'})
+        new CustomEvent('vsc-input', {detail: "type == 'feat'"})
       );
 
       await el.updateComplete;
 
-      expect(el.token).to.deep.eq({
-        linkedToken: ['test token'],
-        shown: 'test value',
-        label: '',
-        type: 'text',
-        name: '',
-      });
+      expect(el.token.shown).to.eq("type == 'feat'");
     });
 
-    it('should render a dropdown to select the linked token', async () => {
+    it('should not include shown in token output when input is empty', async () => {
       const el = (await fixture(
         html`<cme-token-item-edit></cme-token-item-edit>`
       )) as TokenItemEdit;
 
       el.active = true;
-
       await el.updateComplete;
 
-      expect(el.shadowRoot?.getElementById('linkedToken')).to.exist;
+      expect(el.token.shown).to.be.undefined;
     });
 
-    it('should render match value text input if linked token is selected', async () => {
+    it('should initialize shown from token property', async () => {
       const el = (await fixture(
         html`<cme-token-item-edit></cme-token-item-edit>`
       )) as TokenItemEdit;
 
       el.active = true;
-      el.tokens = [
-        {
-          name: 'test token',
-          label: 'Test token',
-          type: 'text',
-        },
-      ];
       el.token = {
         ...el.token,
-        linkedToken: 'test token',
+        shown: "type == 'fix'",
       };
 
       await el.updateComplete;
 
-      const shownInput = el.shadowRoot?.getElementById('shown');
-      expect(shownInput).to.exist;
-      expect(shownInput?.tagName.toLowerCase()).to.eq('vscode-inputbox');
+      const shownInput = el.shadowRoot?.getElementById('shown') as any;
+      expect(shownInput?.value).to.eq("type == 'fix'");
     });
 
-    it('should render a text input for match value (supports expressions)', async () => {
+    it('should render helper text with expression examples', async () => {
       const el = (await fixture(
         html`<cme-token-item-edit></cme-token-item-edit>`
       )) as TokenItemEdit;
 
       el.active = true;
-      el.tokens = [
-        {
-          name: 'test token',
-          label: 'Test token',
-          type: 'enum',
-          options: [
-            {
-              label: 'Test option 1',
-              description: '',
-              value: 'testoption1',
-            },
-            {
-              label: 'Test option 2',
-              description: '',
-              value: 'testoption2',
-            },
-          ],
-        },
-      ];
-      el.token = {
-        ...el.token,
-        linkedToken: 'test token',
-      };
-
       await el.updateComplete;
 
       const shownInput = el.shadowRoot?.getElementById('shown');
-      expect(shownInput).to.exist;
-      expect(shownInput?.tagName.toLowerCase()).to.eq('vscode-inputbox');
-
-      // Should have helper text with examples
-      const helperText = shownInput?.nextElementSibling;
-      expect(helperText?.tagName.toLowerCase()).to.eq('p');
-      expect(helperText?.textContent).to.include('Examples:');
-    });
-
-    it('should render a text input for boolean token (supports expressions)', async () => {
-      const el = (await fixture(
-        html`<cme-token-item-edit></cme-token-item-edit>`
-      )) as TokenItemEdit;
-
-      el.active = true;
-      el.tokens = [
-        {
-          name: 'test token',
-          label: 'Test token',
-          type: 'boolean',
-        },
-      ];
-      el.token = {
-        ...el.token,
-        linkedToken: 'test token',
-      };
-
-      await el.updateComplete;
-
-      const shownInput = el.shadowRoot?.getElementById('shown');
-      expect(shownInput).to.exist;
-      expect(shownInput?.tagName.toLowerCase()).to.eq('vscode-inputbox');
-
-      // Should have helper text with examples
       const helperText = shownInput?.nextElementSibling;
       expect(helperText?.tagName.toLowerCase()).to.eq('p');
       expect(helperText?.textContent).to.include('Examples:');

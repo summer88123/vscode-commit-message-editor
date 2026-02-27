@@ -74,63 +74,25 @@ token 对象数组。它定义了表单字段。下表显示了 token 对象的�
 | options[_{n}_].label       | string  | 选项的值                                                                                                                                                                 | enum               |
 | options[_{n}_].description | string  | 选项的详细描述                                                                                                                                                           | enum               |
 | provider                   | string  | 动态选项提供者的 ID（dynamic-enum 必需）                                                                                                                                 | dynamic-enum       |
-| linkedToken                | string  | 关联 token 的名称。设置此字段后，该 token 成为条件 token                                                                                                                 | 所有               |
-| shown                      | string  | 条件表达式，用于确定此 token 何时可见。支持 When Clause 风格的表达式                                                                                             | 所有               |
+| shown                      | string  | 条件显示表达式。不存在时始终显示；存在时，表达式为 true 才显示。可引用任意其他 token 的值                                                                        | 所有               |
 
-### 条件 Token
+### shown 条件表达式
 
-条件 token 允许你根据其他 token 的值动态显示或隐藏表单字段。这对于创建基于上下文的动态表单非常有用。
+`shown` 字段控制 token 是否在表单中显示：
 
-#### 基本用法
+- **不设置 `shown`**：token 始终显示
+- **设置 `shown`**：对表达式求值，`true` 则显示，`false` 则隐藏
 
-要创建条件 token，需要设置以下属性：
+表达式中可以直接引用其他任意 token 的名称作为变量：
 
-- `linkedToken: "token_name"` - 指定关联的 token 名称
-- `shown: "expression"` - 定义条件表达式
+示例（`type` 为其他 token 的名称）：
+- `type == 'feat'`
+- `type == 'fix' || type == 'hotfix'`
+- `type in ['fix', 'hotfix', 'bug']`
+- `type =~ /^(fix|feat)/`
+- `issue =~ /customer/ && type == 'fix'`
 
-**注意：** 如果 `linkedToken` 存在但 `shown` 为空或未定义，该 token 将不会显示（条件视为不匹配）。
-
-#### shown 表达式语法
-
-**比较表达式**
-
-```json
-{
-  "shown": "value == 'feat'"
-}
-```
-
-支持的比较操作符：`==`、`!=`、`<`、`>`、`<=`、`>=`
-
-**3. 逻辑表达式**
-
-```json
-{
-  "shown": "value == 'fix' || value == 'hotfix'"
-}
-```
-
-支持的逻辑操作符：`&&`（与）、`||`（或）、`!`（非）
-
-**4. `in` 操作符**
-
-```json
-{
-  "shown": "value in ['fix', 'hotfix', 'bug']"
-}
-```
-
-检查关联 token 的值是否在给定数组中。
-
-**5. 正则表达式匹配**
-
-```json
-{
-  "shown": "value =~ /^(fix|feat)/"
-}
-```
-
-使用正则表达式匹配关联 token 的值。
+支持的操作符：`==`、`!=`、`<`、`>`、`<=`、`>=`、`&&`、`||`、`!`、`in`、`=~`（正则匹配）
 
 #### 示例配置
 
@@ -152,16 +114,14 @@ token 对象数组。它定义了表单字段。下表显示了 token 对象的�
       "name": "breaking",
       "type": "text",
       "multiline": true,
-      "linkedToken": "type",
-      "shown": "value == 'feat' || value == 'fix'"
+      "shown": "type == 'feat' || type == 'fix'"
     },
     {
       "label": "问题编号",
       "name": "issue",
       "type": "text",
       "prefix": "Closes #",
-      "linkedToken": "type",
-      "shown": "value in ['fix', 'hotfix']"
+      "shown": "type in ['fix', 'hotfix']"
     }
   ]
 }

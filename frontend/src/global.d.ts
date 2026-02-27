@@ -79,7 +79,6 @@ declare global {
     separator?: string;
     prefix?: string;
     suffix?: string;
-    linkedToken?: string | string[];
     shown?: string;
   }
 

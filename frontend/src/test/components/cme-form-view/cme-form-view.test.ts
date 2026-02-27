@@ -144,7 +144,6 @@ const createConfig = (): ExtensionConfig => {
         name: 'root_cause',
         prefix: 'Root cause: ',
         type: 'text',
-        linkedToken: 'issue_type',
         shown: "issue_type == 'bug'",
       },
       {
@@ -152,7 +151,6 @@ const createConfig = (): ExtensionConfig => {
         name: 'fix',
         prefix: 'Fix: ',
         type: 'text',
-        linkedToken: 'issue_type',
         shown: "issue_type == 'bug'",
       },
     ],
@@ -544,6 +542,7 @@ describe('cme-form-view', () => {
     await el.updateComplete;
 
     store.dispatch(receiveConfig(config));
+    await el.updateComplete;
     store.dispatch(
       updateTokenValues({
         type: 'feat',
@@ -556,11 +555,12 @@ describe('cme-form-view', () => {
         issue_type: 'feature',
       })
     );
+    await el.updateComplete;
 
     expect(
-      el.shadowRoot?.querySelector('vscode-multi-select[name="root_cause"]')
+      el.shadowRoot?.querySelector('vscode-inputbox[name="root_cause"]')
     ).to.be.null;
-    expect(el.shadowRoot?.querySelector('vscode-multi-select[name="fix"]')).to
+    expect(el.shadowRoot?.querySelector('vscode-inputbox[name="fix"]')).to
       .be.null;
   });
 
@@ -570,6 +570,7 @@ describe('cme-form-view', () => {
     await el.updateComplete;
 
     store.dispatch(receiveConfig(config));
+    await el.updateComplete;
     store.dispatch(
       updateTokenValues({
         type: 'feat',
@@ -582,11 +583,12 @@ describe('cme-form-view', () => {
         issue_type: 'bug',
       })
     );
+    await el.updateComplete;
 
     expect(
-      el.shadowRoot?.querySelector('vscode-multi-select[name="root_cause"]')
-    ).not.to.be.undefined;
-    expect(el.shadowRoot?.querySelector('vscode-multi-select[name="fix"]')).not
-      .to.be.undefined;
+      el.shadowRoot?.querySelector('vscode-inputbox[name="root_cause"]')
+    ).not.to.be.null;
+    expect(el.shadowRoot?.querySelector('vscode-inputbox[name="fix"]')).not
+      .to.be.null;
   });
 });

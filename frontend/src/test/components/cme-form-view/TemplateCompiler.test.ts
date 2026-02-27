@@ -133,7 +133,6 @@ const createTokens = (): Token[] => {
       name: 'root_cause',
       prefix: 'Root cause: ',
       type: 'text',
-      linkedToken: 'issue_type',
       shown: "issue_type == 'bug'",
     },
     {
@@ -141,7 +140,6 @@ const createTokens = (): Token[] => {
       name: 'fix',
       prefix: 'Fix: ',
       type: 'text',
-      linkedToken: 'issue_type',
       shown: "issue_type == 'bug'",
     },
   ];
@@ -225,14 +223,13 @@ describe('TemplateCompiler', () => {
       ],
     };
     const tokens: Token[] = [
-      ...createTokens().filter((t) => !t.linkedToken),
+      ...createTokens().filter((t) => !t.shown),
       issueTypeToken,
       {
         label: 'Root cause',
         name: 'root_cause',
         prefix: 'Root cause: ',
         type: 'text',
-        linkedToken: 'issue_type',
         shown: "issue_type == 'bug'",
       },
     ];
@@ -320,8 +317,6 @@ describe('TemplateCompiler', () => {
     compiler.reduceEmptyLines = false;
     const result = compiler.compile();
 
-    console.log(result);
-
     let expected = '';
     expected += 'test1 value\n';
     expected += '\n';
@@ -351,7 +346,6 @@ describe('TemplateCompiler', () => {
         label: 'Conditional field',
         name: 'conditional_field',
         type: 'text',
-        linkedToken: 'type',
         shown: '',
       },
     ];
@@ -370,8 +364,8 @@ describe('TemplateCompiler', () => {
     expect(result).to.eq(expected);
   });
 
-  it('conditional token with undefined shown should not render', () => {
-    const template = ['{type}: {description}', '', '{conditional_field}'];
+  it('conditional token without shown should always render', () => {
+    const template = ['{type}: {description}', '', '{always_visible}'];
     const tokens: Token[] = [
       {
         label: 'Type',
@@ -384,29 +378,30 @@ describe('TemplateCompiler', () => {
         type: 'text',
       },
       {
-        label: 'Conditional field',
-        name: 'conditional_field',
+        label: 'Always visible',
+        name: 'always_visible',
         type: 'text',
-        linkedToken: 'type',
-        // shown is undefined
+        // shown is undefined - should always render
       },
     ];
     const tokenValues = {
       type: 'feat',
       description: 'test description',
-      conditional_field: 'should not appear',
+      always_visible: 'I should appear',
     };
 
     const compiler = new TemplateCompiler(template, tokens, tokenValues);
     const result = compiler.compile();
 
     let expected = '';
-    expected += 'feat: test description';
+    expected += 'feat: test description\n';
+    expected += '\n';
+    expected += 'I should appear';
 
     expect(result).to.eq(expected);
   });
 
-  it('conditional token with multiple linkedTokens should work correctly', () => {
+  it('conditional token with shown referencing multiple tokens should work correctly', () => {
     const template = ['{type}: {description}', '', '{conditional_field}'];
     const tokens: Token[] = [
       {
@@ -436,7 +431,6 @@ describe('TemplateCompiler', () => {
         label: 'Conditional field',
         name: 'conditional_field',
         type: 'text',
-        linkedToken: ['issue', 'type'],
         shown: "issue =~ /客户反馈/ && type == 'fix'",
       },
     ];
@@ -458,7 +452,7 @@ describe('TemplateCompiler', () => {
     expect(result).to.eq(expected);
   });
 
-  it('conditional token with multiple linkedTokens should not render when condition fails', () => {
+  it('conditional token with shown referencing multiple tokens should not render when condition fails', () => {
     const template = ['{type}: {description}', '', '{conditional_field}'];
     const tokens: Token[] = [
       {
@@ -488,7 +482,6 @@ describe('TemplateCompiler', () => {
         label: 'Conditional field',
         name: 'conditional_field',
         type: 'text',
-        linkedToken: ['issue', 'type'],
         shown: "issue =~ /客户反馈/ && type == 'fix'",
       },
     ];
