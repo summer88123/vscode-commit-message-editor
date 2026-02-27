@@ -206,6 +206,59 @@ describe('TemplateCompiler', () => {
     expect(result).to.eq(expected);
   });
 
+  it('conditional fields with expression should be rendered', () => {
+    const template = [
+      '{type}{scope}: {description}',
+      '',
+      '{body}',
+      '',
+      '{root_cause}',
+      '',
+      '{breaking_change}{footer}',
+    ];
+    const issueTypeToken: Token = {
+      label: 'Issue type',
+      name: 'issue_type',
+      type: 'enum',
+      options: [
+        {label: 'Bug', value: 'bug'},
+        {label: 'Story', value: 'story'},
+        {label: 'Task', value: 'task'},
+      ],
+    };
+    const tokens: Token[] = [
+      ...createTokens().filter(t => !t.isConditionalToken),
+      issueTypeToken,
+      {
+        label: 'Root cause',
+        name: 'root_cause',
+        prefix: 'Root cause: ',
+        type: 'text',
+        isConditionalToken: true,
+        linkedToken: 'issue_type',
+        matchValue: "value == 'bug'",
+      },
+    ];
+    const tokenValues = {
+      ...createTokenValues(),
+      issue_type: 'bug',
+    };
+
+    const compiler = new TemplateCompiler(template, tokens, tokenValues);
+    const result = compiler.compile();
+
+    let expected = '';
+    expected += 'feat(lorem|ipsum): test description\n';
+    expected += '\n';
+    expected += 'Test body\n';
+    expected += '\n';
+    expected += 'Root cause: I\'m an idiot\n';
+    expected += '\n';
+    expected += 'BREAKING CHANGE: ';
+
+    expect(result).to.eq(expected);
+  });
+
   it('empty lines should be reduced', () => {
     const template = [
       '{test1}',

@@ -9,6 +9,7 @@ import '@bendera/vscode-webview-elements/dist/vscode-multi-select';
 import '@bendera/vscode-webview-elements/dist/vscode-option';
 import '@bendera/vscode-webview-elements/dist/vscode-single-select';
 import noop from '../../utils/noop';
+import evaluateWhenClause from '../../utils/evaluateWhenClause';
 import type {DynamicEnumsState} from '../../store/store';
 
 class FormBuilder {
@@ -42,8 +43,11 @@ class FormBuilder {
 
   build(): TemplateResult[] {
     const formElements = this._tokens.map((token) => {
-      if (token.isConditionalToken && token.linkedToken && token.matchValue && this.tokenValues?.[token.linkedToken] !== token.matchValue) {
-        return html`${nothing}`;
+      if (token.isConditionalToken && token.linkedToken && token.matchValue) {
+        const linkedValue = this.tokenValues?.[token.linkedToken];
+        if (!evaluateWhenClause(token.matchValue, { value: linkedValue })) {
+          return html`${nothing}`;
+        }
       }
       switch (token.type) {
         case 'enum':

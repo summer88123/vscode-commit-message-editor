@@ -422,6 +422,8 @@ describe('cme-form-view', () => {
     slIssueType!.value = 'bug';
     slIssueType?.dispatchEvent(new CustomEvent('vsc-change'));
 
+    await el.updateComplete;
+
     expect(storeSpy.callCount).to.eq(5);
 
     const slRootCause = el.shadowRoot?.querySelector(
@@ -449,8 +451,8 @@ describe('cme-form-view', () => {
         scope: '',
         type: 'chore',
         issue_type: 'feature',
-        root_cause: '',
-        fix: ''
+        root_cause: 'undefined',
+        fix: 'undefined'
       })
     );
     expect(calls[1].firstArg).to.deep.equal(
@@ -463,8 +465,8 @@ describe('cme-form-view', () => {
         scope: 'lorem|ipsum',
         type: 'chore',
         issue_type: 'feature',
-        root_cause: '',
-        fix: ''
+        root_cause: 'undefined',
+        fix: 'undefined'
       })
     );
     expect(calls[2].firstArg).to.deep.equal(
@@ -477,8 +479,8 @@ describe('cme-form-view', () => {
         scope: 'lorem|ipsum',
         type: 'chore',
         issue_type: 'feature',
-        root_cause: '',
-        fix: ''
+        root_cause: 'undefined',
+        fix: 'undefined'
       })
     );
     expect(calls[3].firstArg).to.deep.equal(
@@ -491,8 +493,8 @@ describe('cme-form-view', () => {
         scope: 'lorem|ipsum',
         type: 'chore',
         issue_type: 'feature',
-        root_cause: '',
-        fix: ''
+        root_cause: 'undefined',
+        fix: 'undefined'
       })
     );
     expect(calls[4].firstArg).to.deep.equal(

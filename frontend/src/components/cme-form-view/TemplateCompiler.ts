@@ -1,4 +1,5 @@
 import {TokenValueDTO} from './types';
+import evaluateWhenClause from '../../utils/evaluateWhenClause';
 
 class TemplateCompiler {
   private _template = '';
@@ -21,7 +22,13 @@ class TemplateCompiler {
 
     this._tokens.forEach(({ name, prefix = '', suffix = '', isConditionalToken, linkedToken, matchValue }) => {
       let value = this._tokenValues[name] || '';
-      const canShowConditionallyRendered = !isConditionalToken || !linkedToken || this._tokenValues[linkedToken] === matchValue;
+      let canShowConditionallyRendered = true;
+      
+      if (isConditionalToken && linkedToken && matchValue) {
+        const linkedValue = this._tokenValues[linkedToken];
+        canShowConditionallyRendered = evaluateWhenClause(matchValue, { value: linkedValue });
+      }
+      
       value = value && canShowConditionallyRendered ? prefix + value + suffix : '';
       compiled = compiled.replace(new RegExp(`{${name}}`, 'g'), value);
     });
