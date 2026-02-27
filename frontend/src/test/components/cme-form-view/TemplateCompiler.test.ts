@@ -347,4 +347,76 @@ describe('TemplateCompiler', () => {
 
     expect(result).to.eq(expected);
   });
+
+  it('conditional token with empty matchValue should not render', () => {
+    const template = ['{type}: {description}', '', '{conditional_field}'];
+    const tokens: Token[] = [
+      {
+        label: 'Type',
+        name: 'type',
+        type: 'text',
+      },
+      {
+        label: 'Description',
+        name: 'description',
+        type: 'text',
+      },
+      {
+        label: 'Conditional field',
+        name: 'conditional_field',
+        type: 'text',
+        linkedToken: 'type',
+        matchValue: '',
+      },
+    ];
+    const tokenValues = {
+      type: 'feat',
+      description: 'test description',
+      conditional_field: 'should not appear',
+    };
+
+    const compiler = new TemplateCompiler(template, tokens, tokenValues);
+    const result = compiler.compile();
+
+    let expected = '';
+    expected += 'feat: test description';
+
+    expect(result).to.eq(expected);
+  });
+
+  it('conditional token with undefined matchValue should not render', () => {
+    const template = ['{type}: {description}', '', '{conditional_field}'];
+    const tokens: Token[] = [
+      {
+        label: 'Type',
+        name: 'type',
+        type: 'text',
+      },
+      {
+        label: 'Description',
+        name: 'description',
+        type: 'text',
+      },
+      {
+        label: 'Conditional field',
+        name: 'conditional_field',
+        type: 'text',
+        linkedToken: 'type',
+        // matchValue is undefined
+      },
+    ];
+    const tokenValues = {
+      type: 'feat',
+      description: 'test description',
+      conditional_field: 'should not appear',
+    };
+
+    const compiler = new TemplateCompiler(template, tokens, tokenValues);
+    const result = compiler.compile();
+
+    let expected = '';
+    expected += 'feat: test description';
+
+    expect(result).to.eq(expected);
+  });
 });
